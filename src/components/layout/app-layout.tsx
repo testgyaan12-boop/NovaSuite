@@ -68,18 +68,6 @@ function NavMenu() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-             <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === '/nutrition'}
-                  tooltip={'Nutrition'}
-                >
-                  <Link href={'/nutrition'} onClick={handleLinkClick}>
-                    <Scan />
-                    <span>Nutrition</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
       </SidebarMenu>
       <SidebarContent className="mt-auto">
             <SidebarMenu>
