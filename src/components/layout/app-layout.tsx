@@ -11,6 +11,7 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -41,8 +42,58 @@ const bottomNavItems = [
     { href: "/login", label: "Login", icon: LogIn },
 ]
 
-export function AppLayout({ children }: { children: React.ReactNode }) {
+function NavMenu() {
   const pathname = usePathname();
+  const { setOpenMobile, isMobile } = useSidebar();
+  
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }
+
+  return (
+     <>
+      <SidebarMenu>
+            {navItems.map((item) => (
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === item.href}
+                  tooltip={item.label}
+                >
+                  <Link href={item.href} onClick={handleLinkClick}>
+                    <item.icon />
+                    <span>{item.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+      </SidebarMenu>
+      <SidebarContent className="mt-auto">
+            <SidebarMenu>
+                 {bottomNavItems.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                        <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.href}
+                        tooltip={item.label}
+                        >
+                        <Link href={item.href} onClick={handleLinkClick}>
+                            <item.icon />
+                            <span>{item.label}</span>
+                        </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    ))}
+            </SidebarMenu>
+      </SidebarContent>
+    </>
+  )
+}
+
+
+export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
@@ -60,40 +111,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarMenu>
-            {navItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === item.href}
-                  tooltip={item.label}
-                >
-                  <Link href={item.href}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarContent className="mt-auto">
-            <SidebarMenu>
-                 {bottomNavItems.map((item) => (
-                    <SidebarMenuItem key={item.href}>
-                        <SidebarMenuButton
-                        asChild
-                        isActive={pathname === item.href}
-                        tooltip={item.label}
-                        >
-                        <Link href={item.href}>
-                            <item.icon />
-                            <span>{item.label}</span>
-                        </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    ))}
-            </SidebarMenu>
+          <NavMenu />
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
