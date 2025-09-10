@@ -82,64 +82,77 @@ function NavMenu() {
   )
 }
 
+function Header() {
+    return (
+        <header className="flex items-center justify-between p-2 border-b md:justify-end">
+            <div className="flex items-center md:hidden">
+                <SidebarTrigger />
+                <div className="flex items-center gap-2 ml-2">
+                    <ApexAthleticsLogo className="size-6 text-primary" />
+                    <h1 className="text-lg font-semibold font-headline">
+                    Apex Athletics
+                    </h1>
+                </div>
+            </div>
+            <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" asChild>
+                    <Link href="/nutrition">
+                        <Scan />
+                    </Link>
+                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <User />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem asChild>
+                            <Link href="/profile">Profile</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/login">Login</Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+        </header>
+    )
+}
+
+function AppLayoutContent({ children }: { children: React.ReactNode }) {
+    return (
+        <>
+            <Sidebar>
+                <SidebarHeader>
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" className="shrink-0" asChild>
+                    <Link href="/">
+                        <ApexAthleticsLogo className="size-6 text-primary" />
+                    </Link>
+                    </Button>
+                    <h1 className="text-xl font-semibold font-headline">
+                    Apex Athletics
+                    </h1>
+                </div>
+                </SidebarHeader>
+                <SidebarContent>
+                <NavMenu />
+                </SidebarContent>
+            </Sidebar>
+            <SidebarInset>
+                <Header/>
+                <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+            </SidebarInset>
+        </>
+    )
+}
+
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
-
   return (
     <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="shrink-0" asChild>
-              <Link href="/">
-                <ApexAthleticsLogo className="size-6 text-primary" />
-              </Link>
-            </Button>
-            <h1 className="text-xl font-semibold font-headline">
-              Apex Athletics
-            </h1>
-          </div>
-        </SidebarHeader>
-        <SidebarContent>
-          <NavMenu />
-        </SidebarContent>
-        <SidebarInset className="flex flex-col">
-            <header className="flex items-center justify-between p-2 border-b md:justify-end">
-                <div className="flex items-center md:hidden">
-                    <SidebarTrigger />
-                    <div className="flex items-center gap-2 ml-2">
-                        <ApexAthleticsLogo className="size-6 text-primary" />
-                        <h1 className="text-lg font-semibold font-headline">
-                        Apex Athletics
-                        </h1>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" asChild>
-                        <Link href="/nutrition">
-                            <Scan />
-                        </Link>
-                    </Button>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <User />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                                <Link href="/profile">Profile</Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/login">Login</Link>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            </header>
-            <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-      </SidebarInset>
-      </Sidebar>
+        <AppLayoutContent>{children}</AppLayoutContent>
     </SidebarProvider>
   );
 }
