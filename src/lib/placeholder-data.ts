@@ -82,3 +82,55 @@ export const EXERCISE_SUGGESTIONS = [
     "Running",
     "Cycling"
 ]
+
+export const DUMMY_GYMS = [
+  {
+    id: 'gym-1',
+    name: 'Powerhouse Gym',
+    address: '123 Muscle Beach, Venice, CA',
+    phone: '555-123-4567',
+    plans: [
+      { name: 'Basic', price: '$30/mo' },
+      { name: 'Premium', price: '$50/mo' },
+    ],
+    image: {
+      src: 'https://picsum.photos/seed/gym1/600/400',
+      alt: 'Powerhouse Gym interior',
+      width: 600,
+      height: 400,
+      "data-ai-hint": 'modern gym'
+    },
+  },
+  {
+    id: 'gym-2',
+    name: 'Iron Temple Fitness',
+    address: '456 Flex Avenue, Austin, TX',
+    phone: '555-765-4321',
+    plans: [
+      { name: 'Standard', price: '$40/mo' },
+      { name: 'Elite', price: '$65/mo' },
+    ],
+     image: {
+      src: 'https://picsum.photos/seed/gym2/600/400',
+      alt: 'Iron Temple Fitness weight room',
+      width: 600,
+      height: 400,
+      "data-ai-hint": 'weightlifting gym'
+    },
+  },
+];
+
+export const PROMOTIONS = [
+  {
+    id: 'promo-1',
+    title: 'Summer Shred Challenge!',
+    description: 'Sign up now and get 2 free personal training sessions.',
+    image: {
+      src: 'https://picsum.photos/seed/promo1/1200/400',
+      alt: 'Promotion for a summer fitness challenge',
+      width: 1200,
+      height: 400,
+      "data-ai-hint": 'fitness promotion'
+    }
+  }
+]

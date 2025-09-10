@@ -20,8 +20,9 @@ import {
   LineChart,
   UtensilsCrossed,
   UserSquare,
-  Scan,
   User,
+  Scan,
+  Store,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -41,6 +42,7 @@ const navItems = [
   { href: "/diet", label: "Diet", icon: UtensilsCrossed },
   { href: "/progress", label: "Progress", icon: LineChart },
   { href: "/trainer", label: "Trainer", icon: UserSquare },
+  { href: "/gyms", label: "Gyms", icon: Store },
 ];
 
 
