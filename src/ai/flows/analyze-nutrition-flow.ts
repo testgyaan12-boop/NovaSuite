@@ -69,7 +69,17 @@ const analyzeNutritionFlow = ai.defineFlow(
     if (!input.imageDataUri && !input.foodName) {
         throw new Error("Either an image or a food name must be provided.");
     }
-    const {output} = await prompt(input);
+    
+    const promptInput: AnalyzeNutritionInput = {};
+    if (input.foodName) {
+      promptInput.foodName = input.foodName;
+    }
+    // Only include imageDataUri if it's a non-empty string
+    if (input.imageDataUri && input.imageDataUri.startsWith('data:image')) {
+      promptInput.imageDataUri = input.imageDataUri;
+    }
+
+    const {output} = await prompt(promptInput);
     return output!;
   }
 );
