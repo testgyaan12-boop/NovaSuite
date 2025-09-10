@@ -6,10 +6,35 @@ import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { DUMMY_MEMBERSHIP } from "@/lib/placeholder-data";
 import { Calendar, Dumbbell, Repeat, User, Wallet } from "lucide-react";
 import { BarChart, Bar, ResponsiveContainer, XAxis, Tooltip, CartesianGrid } from "recharts";
+import { useState, useEffect } from "react";
 
 
 export function MembershipClient() {
   const membership = DUMMY_MEMBERSHIP;
+   const [timeRemaining, setTimeRemaining] = useState('');
+
+  useEffect(() => {
+    const calculateTimeRemaining = () => {
+      const renewalDate = new Date(membership.renewalDate);
+      const now = new Date();
+      const difference = renewalDate.getTime() - now.getTime();
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((difference / 1000 / 60) % 60);
+        setTimeRemaining(`${days}d ${hours}h ${minutes}m`);
+      } else {
+        setTimeRemaining("Renewal due");
+      }
+    };
+
+    calculateTimeRemaining();
+    const interval = setInterval(calculateTimeRemaining, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [membership.renewalDate]);
+
 
   const attendanceData = membership.attendance.map(item => ({
     date: new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
@@ -47,8 +72,9 @@ export function MembershipClient() {
                 <Calendar className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Renews On</p>
-                <p className="font-semibold text-lg">{new Date(membership.renewalDate).toLocaleDateString()}</p>
+                <p className="text-sm text-muted-foreground">Renews In</p>
+                <p className="font-semibold text-lg">{timeRemaining}</p>
+                 <p className="text-xs text-muted-foreground">on {new Date(membership.renewalDate).toLocaleDateString()}</p>
               </div>
             </div>
              <div className="flex items-start gap-4">
