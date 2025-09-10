@@ -4,7 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { DUMMY_MEMBERSHIP } from "@/lib/placeholder-data";
-import { Calendar, Dumbbell, User, Wallet } from "lucide-react";
+import { Calendar, Dumbbell, Repeat, User, Wallet } from "lucide-react";
 import { BarChart, Bar, ResponsiveContainer, XAxis, Tooltip, CartesianGrid } from "recharts";
 
 
@@ -22,6 +22,8 @@ export function MembershipClient() {
       color: "hsl(var(--primary))",
     },
   };
+
+  const lastRenewal = membership.renewalHistory.length > 0 ? membership.renewalHistory[0] : null;
 
   return (
     <div className="grid gap-8 lg:grid-cols-3">
@@ -56,6 +58,16 @@ export function MembershipClient() {
               <div>
                 <p className="text-sm text-muted-foreground">Plan Price</p>
                 <p className="font-semibold text-lg">${membership.planPrice.toFixed(2)}/month</p>
+              </div>
+            </div>
+             <div className="flex items-start gap-4">
+              <div className="bg-primary/10 p-3 rounded-full">
+                <Repeat className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Renewals</p>
+                <p className="font-semibold text-lg">{membership.renewalHistory.length} times</p>
+                 {lastRenewal && <p className="text-xs text-muted-foreground">Last renewal on {new Date(lastRenewal.date).toLocaleDateString()}</p>}
               </div>
             </div>
           </CardContent>

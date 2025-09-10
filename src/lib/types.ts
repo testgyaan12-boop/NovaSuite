@@ -13,7 +13,7 @@ export interface Exercise {
 export interface WorkoutLog {
   id: string;
   date: string; // ISO string
-  name: string;
+  name:string;
   exercises: Exercise[];
   notes?: string;
 }
@@ -59,4 +59,5 @@ export interface MembershipDetails {
   nextSession: string;
   trainerFee: number;
   attendance: { date: string }[];
+  renewalHistory: { date: string; amount: number }[];
 }

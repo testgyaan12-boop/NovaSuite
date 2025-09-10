@@ -45,6 +45,7 @@ const navItems = [
   { href: "/trainer", label: "Trainer", icon: UserSquare },
   { href: "/gyms", label: "Gyms", icon: Store },
   { href: "/membership", label: "Membership", icon: IdCard },
+  { href: "/nutrition", label: "Nutrition", icon: Scan },
 ];
 
 
@@ -58,9 +59,11 @@ function NavMenu() {
     }
   }
 
+  const mobileNavItems = navItems.filter(item => item.href !== '/nutrition');
+
   return (
       <SidebarMenu>
-            {navItems.map((item) => (
+            {(isMobile ? mobileNavItems : navItems).map((item) => (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
@@ -74,18 +77,6 @@ function NavMenu() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-             <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === '/nutrition'}
-                  tooltip={'Nutrition'}
-                >
-                  <Link href={'/nutrition'} onClick={handleLinkClick}>
-                    <Scan />
-                    <span>{'Nutrition'}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
       </SidebarMenu>
   )
 }

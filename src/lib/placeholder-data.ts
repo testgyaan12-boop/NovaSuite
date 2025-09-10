@@ -178,5 +178,10 @@ export const DUMMY_MEMBERSHIP: MembershipDetails = {
     { date: new Date(new Date().setDate(new Date().getDate() - 11)).toISOString() },
     { date: new Date(new Date().setDate(new Date().getDate() - 14)).toISOString() },
     { date: new Date(new Date().setDate(new Date().getDate() - 18)).toISOString() },
+  ],
+  renewalHistory: [
+    { date: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(), amount: 50 },
+    { date: new Date(new Date().setMonth(new Date().getMonth() - 2)).toISOString(), amount: 50 },
+    { date: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString(), amount: 45 },
   ]
 }
