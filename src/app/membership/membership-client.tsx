@@ -4,8 +4,8 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { DUMMY_MEMBERSHIP } from "@/lib/placeholder-data";
-import { Bar, BarChart, Calendar, Fitness, User, Wallet } from "lucide-react";
-import { ResponsiveContainer, XAxis, Tooltip, CartesianGrid } from "recharts";
+import { Calendar, Dumbbell, User, Wallet } from "lucide-react";
+import { BarChart, Bar, ResponsiveContainer, XAxis, Tooltip, CartesianGrid } from "recharts";
 
 
 export function MembershipClient() {
@@ -33,7 +33,7 @@ export function MembershipClient() {
           <CardContent className="grid md:grid-cols-2 gap-6">
             <div className="flex items-start gap-4">
               <div className="bg-primary/10 p-3 rounded-full">
-                <Fitness className="h-6 w-6 text-primary" />
+                <Dumbbell className="h-6 w-6 text-primary" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Active Plan</p>
