@@ -49,7 +49,12 @@ export async function analyzeNutrition(
 
 const prompt = ai.definePrompt({
   name: 'analyzeNutritionPrompt',
-  input: {schema: AnalyzeNutritionInputSchema},
+  input: {
+    schema: z.object({
+      imageDataUri: z.string().optional(),
+      foodName: z.string().optional(),
+    }),
+  },
   output: {schema: AnalyzeNutritionOutputSchema},
   prompt: `You are an expert nutritionist. Analyze the food item based on the provided image and/or name and return its estimated nutritional information. Identify the food and estimate its calories, protein, carbohydrates, fat, and fiber content.
 
@@ -74,7 +79,7 @@ const analyzeNutritionFlow = ai.defineFlow(
     if (input.foodName) {
       promptInput.foodName = input.foodName;
     }
-    // Only include imageDataUri if it's a non-empty string
+    // Only include imageDataUri if it's a non-empty string and a valid data URI
     if (input.imageDataUri && input.imageDataUri.startsWith('data:image')) {
       promptInput.imageDataUri = input.imageDataUri;
     }
