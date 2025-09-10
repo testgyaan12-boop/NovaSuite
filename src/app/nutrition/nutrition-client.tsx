@@ -127,7 +127,7 @@ export function NutritionClient() {
     setAnalysisResult(null);
 
     try {
-      const result = await analyzeNutrition({ imageDataUri: capturedImage, foodName: foodName });
+      const result = await analyzeNutrition({ imageDataUri: capturedImage, foodName: foodName || undefined });
       setAnalysisResult(result);
     } catch (error) {
       console.error(error);
