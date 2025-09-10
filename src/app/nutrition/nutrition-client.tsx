@@ -116,7 +116,6 @@ export function NutritionClient() {
         context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
         const imageDataUri = canvas.toDataURL("image/jpeg");
         setCapturedImage(imageDataUri);
-        setFoodName(""); // Clear text input when image is captured
       }
     }
   };
@@ -206,18 +205,15 @@ export function NutritionClient() {
           </div>
           <div className="relative">
             <Separator />
-            <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-card px-2 text-sm text-muted-foreground">OR</span>
+            <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-card px-2 text-sm text-muted-foreground">AND/OR</span>
           </div>
            <div className="space-y-2">
-            <Label htmlFor="foodName">Food Name</Label>
+            <Label htmlFor="foodName">Food Name (Optional)</Label>
             <Input 
               id="foodName" 
               placeholder="e.g. 'a green apple'" 
               value={foodName} 
-              onChange={(e) => {
-                setFoodName(e.target.value);
-                if (capturedImage) setCapturedImage(null);
-              }}
+              onChange={(e) => setFoodName(e.target.value)}
             />
           </div>
         </CardContent>
