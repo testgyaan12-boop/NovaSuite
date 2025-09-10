@@ -22,6 +22,7 @@ import {
   UserSquare,
   LogIn,
   Scan,
+  User,
 } from "lucide-react";
 import { ApexAthleticsLogo } from "@/components/icons/logo";
 import { usePathname } from "next/navigation";
@@ -35,6 +36,7 @@ const navItems = [
   { href: "/diet", label: "Diet", icon: UtensilsCrossed },
   { href: "/progress", label: "Progress", icon: LineChart },
   { href: "/trainer", label: "Trainer", icon: UserSquare },
+  { href: "/profile", label: "Profile", icon: User },
 ];
 
 const bottomNavItems = [
