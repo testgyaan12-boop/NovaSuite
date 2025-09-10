@@ -6,20 +6,18 @@ export function useLocalStorage<T>(
   key: string,
   initialValue: T
 ): [T, (value: T | ((val: T) => T)) => void] {
-  const [storedValue, setStoredValue] = useState<T>(initialValue);
-
-  useEffect(() => {
-    // This runs only on the client, after the initial render.
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    // This function is executed only on the initial render on the client.
     try {
-      const item = window.localStorage.getItem(key);
-      if (item) {
-        setStoredValue(JSON.parse(item));
+      if (typeof window !== "undefined") {
+        const item = window.localStorage.getItem(key);
+        return item ? JSON.parse(item) : initialValue;
       }
     } catch (error) {
       console.log(error);
-      setStoredValue(initialValue);
     }
-  }, [key, initialValue]);
+    return initialValue;
+  });
 
   const setValue = useCallback(
     (value: T | ((val: T) => T)) => {
