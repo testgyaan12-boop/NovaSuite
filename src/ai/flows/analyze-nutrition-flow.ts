@@ -1,9 +1,9 @@
 'use server';
 
 /**
- * @fileOverview Analyzes the nutritional content of a food item from an image.
+ * @fileOverview Analyzes the nutritional content of a food item from an image or text.
  *
- * - analyzeNutrition - A function that analyzes a food image and returns nutritional information.
+ * - analyzeNutrition - A function that analyzes a food image/name and returns nutritional information.
  * - AnalyzeNutritionInput - The input type for the analyzeNutrition function.
  * - AnalyzeNutritionOutput - The return type for the analyzeNutrition function.
  */
@@ -14,16 +14,21 @@ import {z} from 'genkit';
 const AnalyzeNutritionInputSchema = z.object({
   imageDataUri: z
     .string()
+    .optional()
     .describe(
       "A photo of a food item, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  foodName: z
+    .string()
+    .optional()
+    .describe('The name of the food item.'),
 });
 export type AnalyzeNutritionInput = z.infer<
   typeof AnalyzeNutritionInputSchema
 >;
 
 const AnalyzeNutritionOutputSchema = z.object({
-  foodName: z.string().describe('The name of the food identified in the image.'),
+  foodName: z.string().describe('The name of the food identified.'),
   calories: z.number().describe('The estimated number of calories in the food.'),
   protein: z.number().describe('The estimated amount of protein in grams.'),
   carbohydrates: z
@@ -46,11 +51,12 @@ const prompt = ai.definePrompt({
   name: 'analyzeNutritionPrompt',
   input: {schema: AnalyzeNutritionInputSchema},
   output: {schema: AnalyzeNutritionOutputSchema},
-  prompt: `You are an expert nutritionist. Analyze the food item in the provided image and return its estimated nutritional information. Identify the food and estimate its calories, protein, carbohydrates, fat, and fiber content.
+  prompt: `You are an expert nutritionist. Analyze the food item based on the provided image and/or name and return its estimated nutritional information. Identify the food and estimate its calories, protein, carbohydrates, fat, and fiber content.
 
-Use the following as the source of information about the food.
+If both an image and a name are provided, the image is the primary source of information. If only a name is provided, use that.
 
-Photo: {{media url=imageDataUri}}`,
+{{#if foodName}}Food Name: {{{foodName}}}{{/if}}
+{{#if imageDataUri}}Photo: {{media url=imageDataUri}}{{/if}}`,
 });
 
 const analyzeNutritionFlow = ai.defineFlow(
@@ -60,6 +66,9 @@ const analyzeNutritionFlow = ai.defineFlow(
     outputSchema: AnalyzeNutritionOutputSchema,
   },
   async input => {
+    if (!input.imageDataUri && !input.foodName) {
+        throw new Error("Either an image or a food name must be provided.");
+    }
     const {output} = await prompt(input);
     return output!;
   }

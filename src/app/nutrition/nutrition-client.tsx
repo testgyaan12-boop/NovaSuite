@@ -13,9 +13,12 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { analyzeNutrition } from "@/ai/flows/analyze-nutrition-flow";
 import type { AnalyzeNutritionOutput } from "@/ai/flows/analyze-nutrition-flow";
-import { Camera, RefreshCcw, Zap, Loader2 } from "lucide-react";
+import { Camera, RefreshCcw, Zap, Loader2, Info } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 function NutritionResult({
   result,
@@ -57,6 +60,7 @@ function NutritionResult({
 export function NutritionClient() {
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [foodName, setFoodName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [analysisResult, setAnalysisResult] =
     useState<AnalyzeNutritionOutput | null>(null);
@@ -88,12 +92,6 @@ export function NutritionClient() {
       } catch (error) {
         console.error("Error accessing camera:", error);
         setHasCameraPermission(false);
-        toast({
-          variant: "destructive",
-          title: "Camera Access Denied",
-          description:
-            "Please enable camera permissions in your browser settings to use this feature.",
-        });
       }
     };
 
@@ -118,23 +116,24 @@ export function NutritionClient() {
         context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
         const imageDataUri = canvas.toDataURL("image/jpeg");
         setCapturedImage(imageDataUri);
+        setFoodName(""); // Clear text input when image is captured
       }
     }
   };
 
   const handleAnalyze = async () => {
-    if (!capturedImage) return;
+    if (!capturedImage && !foodName) return;
     setIsLoading(true);
     setAnalysisResult(null);
 
     try {
-      const result = await analyzeNutrition({ imageDataUri: capturedImage });
+      const result = await analyzeNutrition({ imageDataUri: capturedImage, foodName: foodName });
       setAnalysisResult(result);
     } catch (error) {
       console.error(error);
       toast({
         title: "Analysis Failed",
-        description: "Could not analyze the image. Please try again.",
+        description: "Could not analyze. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -145,6 +144,7 @@ export function NutritionClient() {
   const reset = () => {
     setCapturedImage(null);
     setAnalysisResult(null);
+    setFoodName("");
   };
   
    if (hasCameraPermission === null) {
@@ -159,9 +159,10 @@ export function NutritionClient() {
     <div className="grid gap-8 md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>Camera</CardTitle>
+          <CardTitle>Input</CardTitle>
+          <CardDescription>Use your camera or type in a food name.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <div className="relative aspect-video w-full overflow-hidden rounded-md border bg-muted">
             {capturedImage ? (
               <img
@@ -179,30 +180,51 @@ export function NutritionClient() {
                 />
             )}
             {!capturedImage && hasCameraPermission === false && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <p className="text-white">Camera access denied.</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 p-4 text-center">
+                <Alert variant="destructive" className="max-w-sm">
+                  <AlertTitle>Camera Access Denied</AlertTitle>
+                  <AlertDescription>
+                    Please enable camera permissions in your browser settings to use this feature. You can still analyze by typing a food name below.
+                  </AlertDescription>
+                </Alert>
               </div>
             )}
           </div>
           <canvas ref={canvasRef} className="hidden" />
+          <div className="flex justify-end gap-2">
+            {capturedImage ? (
+              <Button variant="outline" onClick={reset}>
+                <RefreshCcw className="mr-2" />
+                Retake
+              </Button>
+            ) : (
+              <Button onClick={handleCapture} disabled={!hasCameraPermission}>
+                <Camera className="mr-2" />
+                Capture
+              </Button>
+            )}
+          </div>
+          <div className="relative">
+            <Separator />
+            <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-card px-2 text-sm text-muted-foreground">OR</span>
+          </div>
+           <div className="space-y-2">
+            <Label htmlFor="foodName">Food Name</Label>
+            <Input 
+              id="foodName" 
+              placeholder="e.g. 'a green apple'" 
+              value={foodName} 
+              onChange={(e) => {
+                setFoodName(e.target.value);
+                if (capturedImage) setCapturedImage(null);
+              }}
+            />
+          </div>
         </CardContent>
-        <CardFooter className="flex justify-end gap-2">
-          {capturedImage ? (
-            <Button variant="outline" onClick={reset}>
-              <RefreshCcw className="mr-2" />
-              Retake
-            </Button>
-          ) : (
-            <Button onClick={handleCapture} disabled={!hasCameraPermission}>
-              <Camera className="mr-2" />
-              Capture
-            </Button>
-          )}
-        </CardFooter>
       </Card>
       
       <div className="space-y-4">
-        <Button onClick={handleAnalyze} disabled={!capturedImage || isLoading} className="w-full">
+        <Button onClick={handleAnalyze} disabled={(!capturedImage && !foodName) || isLoading} className="w-full">
           {isLoading ? (<><Loader2 className="mr-2 animate-spin" /> Analyzing...</>) : (<><Zap className="mr-2" /> Analyze Nutrition</>)}
         </Button>
         
@@ -237,10 +259,11 @@ export function NutritionClient() {
           <NutritionResult result={analysisResult} />
         ) : (
           !isLoading && <Card className="flex h-64 items-center justify-center">
-            <CardContent>
-              <p className="text-center text-muted-foreground">
-                {capturedImage ? "Ready to analyze." : "Capture a photo to get started."}
-              </p>
+            <CardContent className="flex flex-col items-center gap-2 text-center">
+                <Info className="h-8 w-8 text-muted-foreground" />
+                <p className="text-muted-foreground">
+                    {capturedImage ? "Ready to analyze." : "Capture or type in a food to get started."}
+                </p>
             </CardContent>
           </Card>
         )}
