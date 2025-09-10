@@ -19,11 +19,11 @@ import {
   ClipboardList,
   LineChart,
   UtensilsCrossed,
-  UserSquare,
   User,
   Scan,
   Store,
   IdCard,
+  Watch,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -42,9 +42,10 @@ const navItems = [
   { href: "/plans", label: "Plans", icon: ClipboardList },
   { href: "/diet", label: "Diet", icon: UtensilsCrossed },
   { href: "/progress", label: "Progress", icon: LineChart },
-  { href: "/trainer", label: "Trainer", icon: UserSquare },
+  { href: "/trainer", label: "Trainer", icon: User },
   { href: "/gyms", label: "Gyms", icon: Store },
   { href: "/membership", label: "Membership", icon: IdCard },
+  { href: "/connect", label: "Connect", icon: Watch },
   { href: "/nutrition", label: "Nutrition", icon: Scan },
 ];
 
@@ -102,43 +103,43 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarContent>
           <NavMenu />
         </SidebarContent>
-      </Sidebar>
-      <SidebarInset>
-        <header className="flex items-center justify-between p-2 border-b md:hidden">
-            <div className="flex items-center">
-              <SidebarTrigger />
-              <div className="flex items-center gap-2 ml-2">
-                  <ApexAthleticsLogo className="size-6 text-primary" />
-                  <h1 className="text-lg font-semibold font-headline">
-                  Apex Athletics
-                  </h1>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-               <Button variant="ghost" size="icon" asChild>
-                  <Link href="/nutrition">
-                    <Scan />
-                  </Link>
-                </Button>
-                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <User />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                            <Link href="/profile">Profile</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/login">Login</Link>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-        </header>
-        <main className="p-4 md:p-6 lg:p-8">{children}</main>
+        <SidebarInset className="flex flex-col">
+            <header className="flex items-center justify-between p-2 border-b md:justify-end">
+                <div className="flex items-center md:hidden">
+                    <SidebarTrigger />
+                    <div className="flex items-center gap-2 ml-2">
+                        <ApexAthleticsLogo className="size-6 text-primary" />
+                        <h1 className="text-lg font-semibold font-headline">
+                        Apex Athletics
+                        </h1>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" asChild>
+                        <Link href="/nutrition">
+                            <Scan />
+                        </Link>
+                    </Button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <User />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                                <Link href="/profile">Profile</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href="/login">Login</Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </header>
+            <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
       </SidebarInset>
+      </Sidebar>
     </SidebarProvider>
   );
 }

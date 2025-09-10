@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -316,10 +317,11 @@ SidebarRail.displayName = "SidebarRail"
 
 const SidebarInset = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"main">
->(({ className, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement> & { asChild?: boolean }
+>(({ className, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "div";
   return (
-    <main
+    <Comp
       ref={ref}
       className={cn(
         "relative flex min-h-svh flex-1 flex-col bg-background",
@@ -373,7 +375,7 @@ const SidebarFooter = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn("mt-auto flex flex-col gap-2 p-2", className)}
       {...props}
     />
   )
