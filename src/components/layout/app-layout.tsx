@@ -23,6 +23,7 @@ import {
   User,
   Scan,
   Store,
+  IdCard,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -43,6 +44,7 @@ const navItems = [
   { href: "/progress", label: "Progress", icon: LineChart },
   { href: "/trainer", label: "Trainer", icon: UserSquare },
   { href: "/gyms", label: "Gyms", icon: Store },
+  { href: "/membership", label: "Membership", icon: IdCard },
 ];
 
 
@@ -72,6 +74,18 @@ function NavMenu() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
+             <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/nutrition'}
+                  tooltip={'Nutrition'}
+                >
+                  <Link href={'/nutrition'} onClick={handleLinkClick}>
+                    <Scan />
+                    <span>{'Nutrition'}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
       </SidebarMenu>
   )
 }

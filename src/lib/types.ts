@@ -48,3 +48,15 @@ export interface UserProfile {
   height?: number;
   sex?: 'male' | 'female';
 }
+
+export interface MembershipDetails {
+  gymName: string;
+  gymLocation: string;
+  planName: string;
+  renewalDate: string;
+  planPrice: number;
+  trainerName: string;
+  nextSession: string;
+  trainerFee: number;
+  attendance: { date: string }[];
+}

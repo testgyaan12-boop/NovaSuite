@@ -1,4 +1,4 @@
-import type { WorkoutPlan } from "./types";
+import type { WorkoutPlan, MembershipDetails } from "./types";
 
 export const TRAINER_ROUTINES: { [key: string]: WorkoutPlan } = {
   "APEX-START": {
@@ -159,3 +159,24 @@ export const PROMOTIONS = [
     }
   }
 ]
+
+export const DUMMY_MEMBERSHIP: MembershipDetails = {
+  gymName: 'Powerhouse Gym',
+  gymLocation: '123 Muscle Beach, Venice, CA',
+  planName: 'Premium',
+  renewalDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
+  planPrice: 50,
+  trainerName: 'John Doe',
+  nextSession: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(),
+  trainerFee: 75,
+  attendance: [
+    { date: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString() },
+    { date: new Date(new Date().setDate(new Date().getDate() - 4)).toISOString() },
+    { date: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString() },
+    { date: new Date(new Date().setDate(new Date().getDate() - 7)).toISOString() },
+    { date: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString() },
+    { date: new Date(new Date().setDate(new Date().getDate() - 11)).toISOString() },
+    { date: new Date(new Date().setDate(new Date().getDate() - 14)).toISOString() },
+    { date: new Date(new Date().setDate(new Date().getDate() - 18)).toISOString() },
+  ]
+}
