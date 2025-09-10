@@ -35,7 +35,6 @@ const navItems = [
   { href: "/diet", label: "Diet", icon: UtensilsCrossed },
   { href: "/progress", label: "Progress", icon: LineChart },
   { href: "/trainer", label: "Trainer", icon: UserSquare },
-  { href: "/nutrition", label: "Nutrition", icon: Scan },
 ];
 
 const bottomNavItems = [
@@ -69,6 +68,18 @@ function NavMenu() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
+             <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/nutrition'}
+                  tooltip={'Nutrition'}
+                >
+                  <Link href={'/nutrition'} onClick={handleLinkClick}>
+                    <Scan />
+                    <span>Nutrition</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
       </SidebarMenu>
       <SidebarContent className="mt-auto">
             <SidebarMenu>
@@ -115,14 +126,21 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
-        <header className="flex items-center justify-start p-2 border-b md:hidden">
-            <SidebarTrigger />
-            <div className="flex items-center gap-2 ml-2">
-                 <ApexAthleticsLogo className="size-6 text-primary" />
-                <h1 className="text-lg font-semibold font-headline">
-                Apex Athletics
-                </h1>
+        <header className="flex items-center justify-between p-2 border-b md:hidden">
+            <div className="flex items-center">
+              <SidebarTrigger />
+              <div className="flex items-center gap-2 ml-2">
+                  <ApexAthleticsLogo className="size-6 text-primary" />
+                  <h1 className="text-lg font-semibold font-headline">
+                  Apex Athletics
+                  </h1>
+              </div>
             </div>
+             <Button variant="ghost" size="icon" asChild>
+                <Link href="/nutrition">
+                  <Scan />
+                </Link>
+              </Button>
         </header>
         <main className="p-4 md:p-6 lg:p-8">{children}</main>
       </SidebarInset>
