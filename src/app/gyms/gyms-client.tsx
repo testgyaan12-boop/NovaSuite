@@ -1,11 +1,13 @@
 
 "use client";
-
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { DUMMY_GYMS, PROMOTIONS } from "@/lib/placeholder-data";
-import { Phone } from "lucide-react";
+import { Phone, Search } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 function PromotionCard({ promotion }: { promotion: (typeof PROMOTIONS)[0] }) {
     return (
@@ -32,16 +34,26 @@ function GymCard({ gym }: { gym: (typeof DUMMY_GYMS)[0] }) {
   return (
     <Card className="flex flex-col">
       <CardHeader>
-        <div className="aspect-video relative mb-4">
-             <Image 
-                src={gym.image.src}
-                alt={gym.image.alt}
-                width={gym.image.width}
-                height={gym.image.height}
-                className="rounded-md object-cover"
-                data-ai-hint={gym.image['data-ai-hint']}
-            />
-        </div>
+        <Carousel className="w-full mb-4">
+          <CarouselContent>
+            {gym.images.map((image, index) => (
+              <CarouselItem key={index}>
+                <div className="aspect-video relative">
+                  <Image 
+                      src={image.src}
+                      alt={image.alt}
+                      width={image.width}
+                      height={image.height}
+                      className="rounded-md object-cover w-full h-full"
+                      data-ai-hint={image['data-ai-hint']}
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
         <CardTitle>{gym.name}</CardTitle>
         <CardDescription>{gym.address}</CardDescription>
       </CardHeader>
@@ -67,6 +79,13 @@ function GymCard({ gym }: { gym: (typeof DUMMY_GYMS)[0] }) {
 }
 
 export function GymsClient() {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredGyms = DUMMY_GYMS.filter(gym => 
+      gym.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      gym.address.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="space-y-8">
       <div>
@@ -76,13 +95,28 @@ export function GymsClient() {
         </div>
       </div>
 
-      <div>
-        <h3 className="text-2xl font-bold mb-4">Nearby Gyms</h3>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {DUMMY_GYMS.map((gym) => (
-            <GymCard key={gym.id} gym={gym} />
-          ))}
+      <div className="space-y-4">
+        <h3 className="text-2xl font-bold">Nearby Gyms</h3>
+         <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input 
+            placeholder="Search by name or address..."
+            className="pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
+        {filteredGyms.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredGyms.map((gym) => (
+              <GymCard key={gym.id} gym={gym} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-10 text-muted-foreground">
+            <p>No gyms found matching your search.</p>
+          </div>
+        )}
       </div>
     </div>
   );

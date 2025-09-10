@@ -93,13 +93,29 @@ export const DUMMY_GYMS = [
       { name: 'Basic', price: '$30/mo' },
       { name: 'Premium', price: '$50/mo' },
     ],
-    image: {
-      src: 'https://picsum.photos/seed/gym1/600/400',
-      alt: 'Powerhouse Gym interior',
-      width: 600,
-      height: 400,
-      "data-ai-hint": 'modern gym'
-    },
+    images: [
+      {
+        src: 'https://picsum.photos/seed/gym1-1/600/400',
+        alt: 'Powerhouse Gym interior with weights',
+        width: 600,
+        height: 400,
+        "data-ai-hint": 'modern gym weights'
+      },
+      {
+        src: 'https://picsum.photos/seed/gym1-2/600/400',
+        alt: 'Powerhouse Gym cardio area',
+        width: 600,
+        height: 400,
+        "data-ai-hint": 'gym cardio machines'
+      },
+       {
+        src: 'https://picsum.photos/seed/gym1-3/600/400',
+        alt: 'Powerhouse Gym yoga studio',
+        width: 600,
+        height: 400,
+        "data-ai-hint": 'yoga studio'
+      }
+    ]
   },
   {
     id: 'gym-2',
@@ -110,13 +126,22 @@ export const DUMMY_GYMS = [
       { name: 'Standard', price: '$40/mo' },
       { name: 'Elite', price: '$65/mo' },
     ],
-     image: {
-      src: 'https://picsum.photos/seed/gym2/600/400',
-      alt: 'Iron Temple Fitness weight room',
-      width: 600,
-      height: 400,
-      "data-ai-hint": 'weightlifting gym'
-    },
+     images: [
+       {
+        src: 'https://picsum.photos/seed/gym2-1/600/400',
+        alt: 'Iron Temple Fitness weight room',
+        width: 600,
+        height: 400,
+        "data-ai-hint": 'weightlifting gym'
+      },
+      {
+        src: 'https://picsum.photos/seed/gym2-2/600/400',
+        alt: 'Iron Temple Fitness squat racks',
+        width: 600,
+        height: 400,
+        "data-ai-hint": 'gym squat rack'
+      }
+    ]
   },
 ];
 
