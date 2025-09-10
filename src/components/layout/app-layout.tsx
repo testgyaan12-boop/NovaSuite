@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -18,6 +19,7 @@ import {
   LineChart,
   UtensilsCrossed,
   UserSquare,
+  LogIn,
 } from "lucide-react";
 import { ApexAthleticsLogo } from "@/components/icons/logo";
 import { usePathname } from "next/navigation";
@@ -32,6 +34,10 @@ const navItems = [
   { href: "/progress", label: "Progress", icon: LineChart },
   { href: "/trainer", label: "Trainer", icon: UserSquare },
 ];
+
+const bottomNavItems = [
+    { href: "/login", label: "Login", icon: LogIn },
+]
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -68,6 +74,24 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
+        </SidebarContent>
+        <SidebarContent className="mt-auto">
+            <SidebarMenu>
+                 {bottomNavItems.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                        <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.href}
+                        tooltip={item.label}
+                        >
+                        <Link href={item.href}>
+                            <item.icon />
+                            <span>{item.label}</span>
+                        </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    ))}
+            </SidebarMenu>
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
