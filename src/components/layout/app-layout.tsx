@@ -20,10 +20,15 @@ import {
   LineChart,
   UtensilsCrossed,
   UserSquare,
-  LogIn,
   Scan,
   User,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ApexAthleticsLogo } from "@/components/icons/logo";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -36,12 +41,8 @@ const navItems = [
   { href: "/diet", label: "Diet", icon: UtensilsCrossed },
   { href: "/progress", label: "Progress", icon: LineChart },
   { href: "/trainer", label: "Trainer", icon: UserSquare },
-  { href: "/profile", label: "Profile", icon: User },
 ];
 
-const bottomNavItems = [
-    { href: "/login", label: "Login", icon: LogIn },
-]
 
 function NavMenu() {
   const pathname = usePathname();
@@ -54,7 +55,6 @@ function NavMenu() {
   }
 
   return (
-     <>
       <SidebarMenu>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
@@ -71,25 +71,6 @@ function NavMenu() {
               </SidebarMenuItem>
             ))}
       </SidebarMenu>
-      <SidebarContent className="mt-auto">
-            <SidebarMenu>
-                 {bottomNavItems.map((item) => (
-                    <SidebarMenuItem key={item.href}>
-                        <SidebarMenuButton
-                        asChild
-                        isActive={pathname === item.href}
-                        tooltip={item.label}
-                        >
-                        <Link href={item.href} onClick={handleLinkClick}>
-                            <item.icon />
-                            <span>{item.label}</span>
-                        </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    ))}
-            </SidebarMenu>
-      </SidebarContent>
-    </>
   )
 }
 
@@ -126,11 +107,28 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   </h1>
               </div>
             </div>
-             <Button variant="ghost" size="icon" asChild>
-                <Link href="/nutrition">
-                  <Scan />
-                </Link>
-              </Button>
+            <div className="flex items-center gap-2">
+               <Button variant="ghost" size="icon" asChild>
+                  <Link href="/nutrition">
+                    <Scan />
+                  </Link>
+                </Button>
+                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <User />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem asChild>
+                            <Link href="/profile">Profile</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/login">Login</Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </header>
         <main className="p-4 md:p-6 lg:p-8">{children}</main>
       </SidebarInset>
