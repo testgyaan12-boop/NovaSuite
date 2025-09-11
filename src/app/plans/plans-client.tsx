@@ -31,7 +31,8 @@ import {
   Loader2,
   Save,
   Share2,
-  Copy
+  Copy,
+  Bell
 } from "lucide-react";
 import {
   Card,
@@ -658,11 +659,15 @@ export function PlansClient() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold mb-4">Your Workout Plans</h2>
-        <div className="flex flex-wrap gap-2 mb-6">
-            <PlanEditor onSave={handleSavePlan} />
-            <AiExerciseFinder onSaveSuggestion={handleSaveSuggestion} />
-            <Button variant="outline" onClick={requestNotificationPermission}>Enable Reminders</Button>
+        <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold">Your Workout Plans</h2>
+            <div className="flex items-center gap-2">
+                <PlanEditor onSave={handleSavePlan} />
+                <AiExerciseFinder onSaveSuggestion={handleSaveSuggestion} />
+                <Button variant="outline" size="icon" onClick={requestNotificationPermission}>
+                    <Bell />
+                </Button>
+            </div>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {plans.length === 0 ? (
@@ -730,3 +735,5 @@ export function PlansClient() {
     </div>
   );
 }
+
+    
