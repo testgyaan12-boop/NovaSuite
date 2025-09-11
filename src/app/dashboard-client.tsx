@@ -27,7 +27,7 @@ export function DashboardClient() {
   const lastBodyFat = progress.length > 0 ? progress[progress.length-1].bodyFat : null;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Log New Workout</CardTitle>
@@ -79,28 +79,32 @@ export function DashboardClient() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="lg:col-span-2 xl:col-span-1">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Daily Diet Goals</CardTitle>
           <UtensilsCrossed className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="space-y-1 text-sm">
-            <div>
-              <span className="font-medium">Calories: </span>
-              <span className="text-muted-foreground">{diet.calories} kcal</span>
+          <div className="grid grid-cols-2 gap-4 text-center">
+            <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-muted aspect-square">
+              <p className="text-xs font-medium">Calories</p>
+              <p className="text-lg font-bold">{diet.calories}</p>
+              <p className="text-xs text-muted-foreground">kcal</p>
             </div>
-            <div>
-              <span className="font-medium">Protein: </span>
-              <span className="text-muted-foreground">{diet.protein} g</span>
+             <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-muted aspect-square">
+              <p className="text-xs font-medium">Protein</p>
+              <p className="text-lg font-bold">{diet.protein}</p>
+              <p className="text-xs text-muted-foreground">g</p>
             </div>
-            <div>
-                <span className="font-medium">Carbs: </span>
-                <span className="text-muted-foreground">{diet.carbohydrates} g</span>
+             <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-muted aspect-square">
+              <p className="text-xs font-medium">Carbs</p>
+              <p className="text-lg font-bold">{diet.carbohydrates}</p>
+              <p className="text-xs text-muted-foreground">g</p>
             </div>
-            <div>
-              <span className="font-medium">Fat: </span>
-              <span className="text-muted-foreground">{diet.fat} g</span>
+             <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-muted aspect-square">
+              <p className="text-xs font-medium">Fat</p>
+              <p className="text-lg font-bold">{diet.fat}</p>
+              <p className="text-xs text-muted-foreground">g</p>
             </div>
           </div>
         </CardContent>
