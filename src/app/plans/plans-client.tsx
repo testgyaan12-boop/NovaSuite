@@ -32,7 +32,8 @@ import {
   Save,
   Share2,
   Copy,
-  Bell
+  Bell,
+  Pencil,
 } from "lucide-react";
 import {
   Card,
@@ -65,9 +66,11 @@ const EXERCISE_CATEGORIES = [
 function PlanEditor({
   onSave,
   plan,
+  isIcon,
 }: {
   onSave: (plan: WorkoutPlan) => void;
   plan?: WorkoutPlan;
+  isIcon?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(plan?.name || "");
@@ -151,7 +154,11 @@ function PlanEditor({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {plan ? (
+        {isIcon ? (
+            <Button variant="outline" size="icon">
+              <Pencil className="h-4 w-4" />
+            </Button>
+        ) : plan ? (
           <Button variant="outline">Edit Plan</Button>
         ) : (
           <Button>
@@ -338,8 +345,8 @@ function AiSuggestions({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary">
-          <Sparkles className="mr-2 h-4 w-4" /> AI Suggestion
+        <Button variant="secondary" size="icon">
+          <Sparkles className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md md:max-w-4xl">
@@ -682,8 +689,23 @@ export function PlansClient() {
             plans.map((plan) => (
                 <Card key={plan.id} className="flex flex-col">
                 <CardHeader>
-                    <CardTitle>{plan.name}</CardTitle>
-                    <CardDescription>{plan.description}</CardDescription>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <CardTitle>{plan.name}</CardTitle>
+                            <CardDescription>{plan.description}</CardDescription>
+                        </div>
+                        <div className="flex gap-2">
+                           <PlanEditor plan={plan} onSave={handleSavePlan} isIcon={true} />
+                           <AiSuggestions plan={plan} onUpdatePlan={handleSavePlan} />
+                            <Button
+                                variant="destructive"
+                                size="icon"
+                                onClick={() => handleDeletePlan(plan.id)}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent className="flex-grow">
                     <ul className="space-y-1 text-sm text-muted-foreground">
@@ -693,17 +715,6 @@ export function PlansClient() {
                     {plan.exercises.length > 3 && <li>...and more</li>}
                     </ul>
                 </CardContent>
-                <CardFooter className="flex justify-between gap-2 flex-wrap">
-                    <PlanEditor plan={plan} onSave={handleSavePlan} />
-                    <AiSuggestions plan={plan} onUpdatePlan={handleSavePlan} />
-                    <Button
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => handleDeletePlan(plan.id)}
-                    >
-                    <Trash2 className="h-4 w-4" />
-                    </Button>
-                </CardFooter>
                 </Card>
             ))
             )}
@@ -735,5 +746,7 @@ export function PlansClient() {
     </div>
   );
 }
+
+    
 
     
