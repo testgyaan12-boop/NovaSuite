@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -20,14 +21,17 @@ import type {
   Exercise,
   ExerciseSet,
   UserProfile,
+  SavedExerciseSuggestion
 } from "@/lib/types";
 import {
-  Calendar as CalendarIcon,
   Plus,
   Sparkles,
   Trash2,
   Search,
   Loader2,
+  Save,
+  Share2,
+  Copy
 } from "lucide-react";
 import {
   Card,
@@ -422,7 +426,11 @@ function AiSuggestions({
   );
 }
 
-function AiExerciseFinder() {
+function AiExerciseFinder({
+    onSaveSuggestion
+}: {
+    onSaveSuggestion: (suggestion: SavedExerciseSuggestion) => void;
+}) {
     const { toast } = useToast();
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -445,6 +453,19 @@ function AiExerciseFinder() {
         } finally {
             setIsLoading(false);
         }
+    }
+    
+    const handleSave = () => {
+        if (!suggestions) return;
+        const newSavedSuggestion: SavedExerciseSuggestion = {
+            ...suggestions,
+            id: crypto.randomUUID(),
+            savedAt: new Date().toISOString(),
+            category,
+        };
+        onSaveSuggestion(newSavedSuggestion);
+        toast({ title: "Exercise Ideas Saved!" });
+        setOpen(false);
     }
 
     return (
@@ -502,13 +523,94 @@ function AiExerciseFinder() {
                         </Accordion>
                     )}
                 </div>
+                 {suggestions && (
+                    <DialogFooter>
+                        <Button variant="secondary" onClick={handleSave}>
+                            <Save className="mr-2"/> Save Ideas
+                        </Button>
+                    </DialogFooter>
+                 )}
             </DialogContent>
         </Dialog>
     )
 }
 
+function SavedExerciseCard({
+    suggestion,
+    onDelete,
+}: {
+    suggestion: SavedExerciseSuggestion;
+    onDelete: (id: string) => void;
+}) {
+    const { toast } = useToast();
+
+    const handleCopy = () => {
+        const textToCopy = suggestion.exercises
+            .map(ex => `${ex.name}\nEquipment: ${ex.equipment}\n${ex.description}`)
+            .join('\n\n');
+        navigator.clipboard.writeText(textToCopy);
+        toast({ title: "Copied to clipboard!" });
+    };
+    
+    const handleShare = () => {
+        const textToShare = `Here are some ${suggestion.category} exercise ideas:\n\n${suggestion.exercises
+            .map(ex => `${ex.name} (${ex.equipment})`)
+            .join('\n')}`;
+            
+        if(navigator.share) {
+            navigator.share({
+                title: `${suggestion.category} Exercise Ideas`,
+                text: textToShare,
+            }).catch(err => console.error("Share failed", err));
+        } else {
+            handleCopy();
+            toast({ title: "Share not supported, copied instead."})
+        }
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>{suggestion.category} Ideas</CardTitle>
+                        <CardDescription>Saved on {new Date(suggestion.savedAt).toLocaleDateString()}</CardDescription>
+                    </div>
+                     <Button variant="ghost" size="icon" onClick={() => onDelete(suggestion.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                 <Accordion type="single" collapsible className="w-full space-y-2">
+                    {suggestion.exercises.map((ex, index) => (
+                        <AccordionItem value={`item-${index}`} key={index} className="border-b-0">
+                            <Card className="bg-muted/50">
+                                <AccordionTrigger className="p-3 hover:no-underline">
+                                        <div className="flex flex-col text-left">
+                                        <span className="font-semibold">{ex.name}</span>
+                                        <span className="text-sm text-muted-foreground">{ex.equipment}</span>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="px-3 pb-3">
+                                    <p className="text-sm">{ex.description}</p>
+                                </AccordionContent>
+                            </Card>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </CardContent>
+            <CardFooter className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={handleShare}><Share2 className="mr-2"/> Share</Button>
+                <Button variant="outline" size="sm" onClick={handleCopy}><Copy className="mr-2"/> Copy</Button>
+            </CardFooter>
+        </Card>
+    )
+}
+
 export function PlansClient() {
   const [plans, setPlans] = useLocalStorage<WorkoutPlan[]>("workout-plans", []);
+  const [savedSuggestions, setSavedSuggestions] = useLocalStorage<SavedExerciseSuggestion[]>("saved-exercise-suggestions", []);
   const { toast } = useToast();
 
   const handleSavePlan = (newPlan: WorkoutPlan) => {
@@ -529,6 +631,15 @@ export function PlansClient() {
     toast({ title: "Plan Deleted", variant: "destructive" });
   };
   
+  const handleSaveSuggestion = (suggestion: SavedExerciseSuggestion) => {
+      setSavedSuggestions([suggestion, ...savedSuggestions]);
+  }
+  
+  const handleDeleteSuggestion = (id: string) => {
+      setSavedSuggestions(savedSuggestions.filter(s => s.id !== id));
+      toast({ title: "Suggestion Deleted", variant: "destructive" });
+  }
+
   const requestNotificationPermission = () => {
     if (!("Notification" in window)) {
       toast({ title: "Notifications not supported", variant: "destructive" });
@@ -545,50 +656,76 @@ export function PlansClient() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-2">
-        <PlanEditor onSave={handleSavePlan} />
-        <AiExerciseFinder />
-        <Button variant="outline" onClick={requestNotificationPermission}>Enable Reminders</Button>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {plans.length === 0 ? (
-          <Card className="col-span-full flex items-center justify-center p-10">
-            <CardContent>
-              <p className="text-muted-foreground">
-                No workout plans created yet.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          plans.map((plan) => (
-            <Card key={plan.id} className="flex flex-col">
-              <CardHeader>
-                <CardTitle>{plan.name}</CardTitle>
-                <CardDescription>{plan.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <ul className="space-y-1 text-sm text-muted-foreground">
-                  {plan.exercises.slice(0, 3).map((ex) => (
-                    <li key={ex.id} className="truncate">{ex.name}</li>
-                  ))}
-                  {plan.exercises.length > 3 && <li>...and more</li>}
-                </ul>
-              </CardContent>
-              <CardFooter className="flex justify-between gap-2">
-                <PlanEditor plan={plan} onSave={handleSavePlan} />
-                <AiSuggestions plan={plan} onUpdatePlan={handleSavePlan} />
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => handleDeletePlan(plan.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </CardFooter>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Your Workout Plans</h2>
+        <div className="flex flex-wrap gap-2 mb-6">
+            <PlanEditor onSave={handleSavePlan} />
+            <AiExerciseFinder onSaveSuggestion={handleSaveSuggestion} />
+            <Button variant="outline" onClick={requestNotificationPermission}>Enable Reminders</Button>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {plans.length === 0 ? (
+            <Card className="md:col-span-2 lg:col-span-3 flex items-center justify-center p-10">
+                <CardContent className="p-0">
+                <p className="text-muted-foreground">
+                    No workout plans created yet.
+                </p>
+                </CardContent>
             </Card>
-          ))
-        )}
+            ) : (
+            plans.map((plan) => (
+                <Card key={plan.id} className="flex flex-col">
+                <CardHeader>
+                    <CardTitle>{plan.name}</CardTitle>
+                    <CardDescription>{plan.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                    {plan.exercises.slice(0, 3).map((ex) => (
+                        <li key={ex.id} className="truncate">{ex.name}</li>
+                    ))}
+                    {plan.exercises.length > 3 && <li>...and more</li>}
+                    </ul>
+                </CardContent>
+                <CardFooter className="flex justify-between gap-2 flex-wrap">
+                    <PlanEditor plan={plan} onSave={handleSavePlan} />
+                    <AiSuggestions plan={plan} onUpdatePlan={handleSavePlan} />
+                    <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => handleDeletePlan(plan.id)}
+                    >
+                    <Trash2 className="h-4 w-4" />
+                    </Button>
+                </CardFooter>
+                </Card>
+            ))
+            )}
+        </div>
+      </div>
+      
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Saved Exercise Ideas</h2>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+             {savedSuggestions.length === 0 ? (
+                <Card className="md:col-span-2 lg:col-span-3 flex items-center justify-center p-10">
+                    <CardContent className="p-0">
+                    <p className="text-muted-foreground">
+                        No exercise ideas saved yet. Use the "Find New Exercises" tool!
+                    </p>
+                    </CardContent>
+                </Card>
+            ) : (
+                savedSuggestions.map(suggestion => (
+                    <SavedExerciseCard 
+                        key={suggestion.id}
+                        suggestion={suggestion}
+                        onDelete={handleDeleteSuggestion}
+                    />
+                ))
+            )}
+        </div>
       </div>
     </div>
   );
