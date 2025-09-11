@@ -76,7 +76,7 @@ function ManualDietCard() {
           </div>
            <div className="space-y-2">
             <Label htmlFor="carbohydrates" className="flex items-center gap-2">
-              <Flame className="h-5 w-5 text-primary" />
+              <Sparkles className="h-5 w-5 text-primary" />
               Carbohydrates (g)
             </Label>
             <Input
@@ -349,7 +349,7 @@ function AiDietPlanner() {
                                 <CardDescription>Saved on {new Date(plan.savedAt).toLocaleDateString()}</CardDescription>
                             </div>
                             <Button variant="destructive" size="icon" onClick={() => handleDeletePlan(plan.id)}>
-                                <Trash2 />
+                                <Trash2 className="h-4 w-4" />
                             </Button>
                         </div>
                     </CardHeader>
@@ -398,8 +398,8 @@ function AiDietPlanner() {
 
 export function DietClient() {
   return (
-    <div className="grid gap-8 lg:grid-cols-3 xl:grid-cols-2">
-      <div className="lg:col-span-2 xl:col-span-1">
+    <div className="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
+      <div className="lg:col-span-1 xl:col-span-2 space-y-6">
         <AiDietPlanner />
       </div>
       <div className="lg:col-span-1">
@@ -408,3 +408,5 @@ export function DietClient() {
     </div>
   );
 }
+
+    
