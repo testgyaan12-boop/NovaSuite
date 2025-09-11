@@ -23,6 +23,7 @@ import {
   IdCard,
   Calendar,
   Rocket,
+  Camera,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -47,6 +48,7 @@ const navItems = [
   { href: "/workouts", label: "Workouts", icon: Dumbbell },
   { href: "/plans", label: "Plans", icon: ClipboardList },
   { href: "/diet", label: "Diet", icon: UtensilsCrossed },
+  { href: "/nutrition", label: "Nutrition", icon: Camera },
   { href: "/progress", label: "Progress", icon: LineChart },
   { href: "/trainer", label: "Trainer", icon: User },
   { href: "/gyms", label: "Gyms", icon: Store },
@@ -92,8 +94,8 @@ function Header() {
             </div>
             <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" className="md:hidden" asChild>
-                    <Link href="/diet">
-                        <UtensilsCrossed />
+                    <Link href="/nutrition">
+                        <Camera />
                     </Link>
                 </Button>
                 <DropdownMenu>
