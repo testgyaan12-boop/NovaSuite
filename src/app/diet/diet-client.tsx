@@ -8,11 +8,12 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 import type { DietPlan, UserProfile } from "@/lib/types";
-import { Beef, Droplets, Flame, Sparkles, Loader2 } from "lucide-react";
+import { Beef, Droplets, Flame, Sparkles, Loader2, Utensils } from "lucide-react";
 import { useState } from "react";
-import { suggestDietPlan, type SuggestDietPlanInput, type SuggestDietPlanOutput } from "@/ai/flows/suggest-diet-plan";
+import { suggestDietPlan, type SuggestDietPlanOutput } from "@/ai/flows/suggest-diet-plan";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 function ManualDietCard() {
   const [dietPlan, setDietPlan] = useLocalStorage<DietPlan>("diet-plan", {
@@ -123,10 +124,11 @@ function AiDietPlanner() {
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormState({ ...formState, [e.target.name]: +e.target.value });
+    const value = e.target.type === 'number' ? +e.target.value : e.target.value;
+    setFormState({ ...formState, [e.target.name]: value });
   };
-
-  const handleSelectChange = (name: keyof SuggestDietPlanInput) => (value: string) => {
+  
+  const handleSelectChange = (name: keyof Omit<SuggestDietPlanInput, 'age' | 'height' | 'weight' >) => (value: string) => {
     setFormState({ ...formState, [name]: value });
   };
   
@@ -136,7 +138,7 @@ function AiDietPlanner() {
     setSuggestion(null);
 
     // Basic validation
-    if (!formState.age || !formState.height || !formState.weight) {
+    if (!formState.age || !formState.height || !formState.weight || !formState.sex || !formState.activityLevel || !formState.goal) {
         toast({ title: "Missing Information", description: "Please fill out all profile fields.", variant: "destructive" });
         setIsLoading(false);
         return;
@@ -156,10 +158,10 @@ function AiDietPlanner() {
   const handleAcceptSuggestion = () => {
     if (suggestion) {
       setDietPlan({
-        calories: suggestion.calories,
-        protein: suggestion.protein,
-        fat: suggestion.fat,
-        carbohydrates: suggestion.carbohydrates,
+        calories: suggestion.dailySummary.calories,
+        protein: suggestion.dailySummary.protein,
+        fat: suggestion.dailySummary.fat,
+        carbohydrates: suggestion.dailySummary.carbohydrates,
       });
       toast({
         title: "Diet Plan Updated!",
@@ -256,31 +258,58 @@ function AiDietPlanner() {
             <CardTitle>AI Diet Suggestion</CardTitle>
             <CardDescription>Here's a plan tailored to your profile and goals.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground italic">{suggestion.explanation}</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              <div className="bg-muted p-3 rounded-lg">
-                <p className="text-sm font-medium">Calories</p>
-                <p className="text-2xl font-bold">{suggestion.calories}</p>
-                <p className="text-xs text-muted-foreground">kcal</p>
-              </div>
-              <div className="bg-muted p-3 rounded-lg">
-                <p className="text-sm font-medium">Protein</p>
-                <p className="text-2xl font-bold">{suggestion.protein}</p>
-                <p className="text-xs text-muted-foreground">grams</p>
-              </div>
-              <div className="bg-muted p-3 rounded-lg">
-                <p className="text-sm font-medium">Carbs</p>
-                <p className="text-2xl font-bold">{suggestion.carbohydrates}</p>
-                 <p className="text-xs text-muted-foreground">grams</p>
-              </div>
-              <div className="bg-muted p-3 rounded-lg">
-                <p className="text-sm font-medium">Fat</p>
-                <p className="text-2xl font-bold">{suggestion.fat}</p>
-                 <p className="text-xs text-muted-foreground">grams</p>
-              </div>
+          <CardContent className="space-y-6">
+            <div>
+                <p className="text-sm text-muted-foreground italic mb-4">{suggestion.explanation}</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div className="bg-muted p-3 rounded-lg">
+                    <p className="text-sm font-medium">Calories</p>
+                    <p className="text-2xl font-bold">{suggestion.dailySummary.calories}</p>
+                    <p className="text-xs text-muted-foreground">kcal</p>
+                </div>
+                <div className="bg-muted p-3 rounded-lg">
+                    <p className="text-sm font-medium">Protein</p>
+                    <p className="text-2xl font-bold">{suggestion.dailySummary.protein}</p>
+                    <p className="text-xs text-muted-foreground">grams</p>
+                </div>
+                <div className="bg-muted p-3 rounded-lg">
+                    <p className="text-sm font-medium">Carbs</p>
+                    <p className="text-2xl font-bold">{suggestion.dailySummary.carbohydrates}</p>
+                    <p className="text-xs text-muted-foreground">grams</p>
+                </div>
+                <div className="bg-muted p-3 rounded-lg">
+                    <p className="text-sm font-medium">Fat</p>
+                    <p className="text-2xl font-bold">{suggestion.dailySummary.fat}</p>
+                    <p className="text-xs text-muted-foreground">grams</p>
+                </div>
+                </div>
             </div>
-            <Button onClick={handleAcceptSuggestion}>Accept this Plan</Button>
+
+            <div>
+                <h3 className="text-lg font-semibold mb-2 flex items-center gap-2"><Utensils /> Sample Meal Plan</h3>
+                <Accordion type="single" collapsible defaultValue="item-0" className="w-full">
+                    {suggestion.mealPlan.map((meal, index) => (
+                        <AccordionItem value={`item-${index}`} key={index}>
+                           <AccordionTrigger>
+                                <div className="flex flex-col text-left">
+                                    <span className="font-semibold">{meal.time}</span>
+                                    <span className="text-sm text-muted-foreground">{meal.foodName}</span>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm px-2">
+                                    <div><span className="font-medium">Calories:</span> {meal.calories} kcal</div>
+                                    <div><span className="font-medium">Protein:</span> {meal.protein} g</div>
+                                    <div><span className="font-medium">Carbs:</span> {meal.carbohydrates} g</div>
+                                    <div><span className="font-medium">Fat:</span> {meal.fat} g</div>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </div>
+            
+            <Button onClick={handleAcceptSuggestion}>Accept Daily Totals</Button>
           </CardContent>
         </Card>
       )}

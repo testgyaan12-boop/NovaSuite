@@ -25,18 +25,30 @@ const SuggestDietPlanInputSchema = z.object({
 });
 export type SuggestDietPlanInput = z.infer<typeof SuggestDietPlanInputSchema>;
 
+const MealSchema = z.object({
+  time: z.string().describe('The time of the meal (e.g., Breakfast, Lunch, Dinner, Snack).'),
+  foodName: z.string().describe('The name of the food for the meal.'),
+  calories: z.number().describe('Estimated calories for the meal.'),
+  protein: z.number().describe('Estimated protein in grams for the meal.'),
+  carbohydrates: z.number().describe('Estimated carbohydrates in grams for the meal.'),
+  fat: z.number().describe('Estimated fat in grams for the meal.'),
+});
+
 const SuggestDietPlanOutputSchema = z.object({
-  calories: z.number().describe('The suggested daily calorie intake in kcal.'),
-  protein: z.number().describe('The suggested daily protein intake in grams.'),
-  carbohydrates: z
-    .number()
-    .describe('The suggested daily carbohydrates intake in grams.'),
-  fat: z.number().describe('The suggested daily fat intake in grams.'),
+  dailySummary: z.object({
+    calories: z.number().describe('The suggested total daily calorie intake in kcal.'),
+    protein: z.number().describe('The suggested total daily protein intake in grams.'),
+    carbohydrates: z
+      .number()
+      .describe('The suggested total daily carbohydrates intake in grams.'),
+    fat: z.number().describe('The suggested total daily fat intake in grams.'),
+  }),
   explanation: z
     .string()
     .describe(
       'A detailed explanation of why this diet plan was suggested based on the user profile and goals.'
     ),
+  mealPlan: z.array(MealSchema).describe("A sample one-day meal plan with suggestions for breakfast, lunch, dinner, and snacks."),
 });
 export type SuggestDietPlanOutput = z.infer<typeof SuggestDietPlanOutputSchema>;
 
@@ -52,7 +64,11 @@ const prompt = ai.definePrompt({
   output: {schema: SuggestDietPlanOutputSchema},
   prompt: `You are an expert nutritionist and personal trainer. Your task is to create a daily nutritional plan based on the user's profile and fitness goals.
 
-  Calculate the required daily macros (calories, protein, carbohydrates, fat) and provide a brief explanation for your recommendations. Do not include any preamble or conversational filler.
+  First, calculate the required daily macros (calories, protein, carbohydrates, fat) and provide a brief explanation for your recommendations.
+  
+  Second, create a sample one-day meal plan with specific food suggestions for breakfast, lunch, dinner, and one or two snacks. For each meal, provide an estimated breakdown of its calories, protein, carbohydrates, and fat.
+
+  Do not include any preamble or conversational filler. Structure the entire response according to the output schema.
 
   User Profile:
   - Age: {{{age}}} years
