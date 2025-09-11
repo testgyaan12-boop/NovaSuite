@@ -190,6 +190,7 @@ export const ASSIGNED_TRAINER: PersonalTrainer = {
     name: "Jane Smith",
     specialty: "Strength & Conditioning",
     email: "jane.smith@example.com",
+    phone: "555-987-6543",
     nextSession: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString(),
     fee: 80,
     avatar: {
@@ -206,6 +207,7 @@ export const NEARBY_TRAINERS: Trainer[] = [
         specialty: 'Powerlifting',
         location: 'Venice, CA',
         rating: 4.8,
+        phone: '555-111-2222',
         avatar: {
             src: 'https://picsum.photos/seed/trainer-mike/400/400',
             alt: 'Portrait of Mike Johnson',
@@ -218,6 +220,7 @@ export const NEARBY_TRAINERS: Trainer[] = [
         specialty: 'Yoga & Flexibility',
         location: 'Santa Monica, CA',
         rating: 4.9,
+        phone: '555-333-4444',
         avatar: {
             src: 'https://picsum.photos/seed/trainer-emily/400/400',
             alt: 'Portrait of Emily Williams',
@@ -230,6 +233,7 @@ export const NEARBY_TRAINERS: Trainer[] = [
         specialty: 'CrossFit',
         location: 'Venice, CA',
         rating: 4.7,
+        phone: '555-555-6666',
         avatar: {
             src: 'https://picsum.photos/seed/trainer-chris/400/400',
             alt: 'Portrait of Chris Lee',

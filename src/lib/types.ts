@@ -75,6 +75,7 @@ export interface PersonalTrainer {
     name: string;
     specialty: string;
     email: string;
+    phone?: string;
     nextSession: string; // ISO string
     fee: number;
     avatar: {
@@ -90,9 +91,19 @@ export interface Trainer {
     specialty: string;
     location: string;
     rating: number;
+    phone?: string;
     avatar: {
         src: string;
         alt: string;
         'data-ai-hint': string;
     };
+}
+
+export interface ScheduledSession {
+    id: string;
+    trainerId: string;
+    trainerName: string;
+    sessionDate: string; // ISO string
+    sessionTime: string;
+    createdAt: string; // ISO string
 }
