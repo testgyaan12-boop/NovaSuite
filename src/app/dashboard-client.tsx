@@ -19,6 +19,7 @@ export function DashboardClient() {
   const [diet] = useLocalStorage<DietPlan>("diet-plan", {
     calories: 2000,
     protein: 150,
+    carbohydrates: 250,
     fat: 60,
   });
 
@@ -92,6 +93,10 @@ export function DashboardClient() {
             <div>
               <span className="font-medium">Protein: </span>
               <span className="text-muted-foreground">{diet.protein} g</span>
+            </div>
+            <div>
+                <span className="font-medium">Carbs: </span>
+                <span className="text-muted-foreground">{diet.carbohydrates} g</span>
             </div>
             <div>
               <span className="font-medium">Fat: </span>
