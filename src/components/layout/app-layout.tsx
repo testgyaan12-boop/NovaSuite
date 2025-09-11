@@ -11,7 +11,6 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -50,26 +49,17 @@ const navItems = [
 
 function NavMenu() {
   const pathname = usePathname();
-  const { setOpenMobile, isMobile } = useSidebar();
-  
-  const handleLinkClick = () => {
-    if (isMobile) {
-      setOpenMobile(false);
-    }
-  }
-
-  const mobileNavItems = navItems.filter(item => item.href !== '/nutrition');
 
   return (
       <SidebarMenu>
-            {(isMobile ? mobileNavItems : navItems).map((item) => (
+            {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
                   isActive={pathname === item.href}
                   tooltip={item.label}
                 >
-                  <Link href={item.href} onClick={handleLinkClick}>
+                  <Link href={item.href}>
                     <item.icon />
                     <span>{item.label}</span>
                   </Link>
@@ -81,20 +71,17 @@ function NavMenu() {
 }
 
 function Header({children}: {children?: ReactNode}) {
-    const { isMobile } = useSidebar();
     return (
         <header className="flex items-center justify-between p-2 border-b md:justify-end">
-            {isMobile && (
-                <div className="flex items-center md:hidden">
-                    <SidebarTrigger />
-                    <div className="flex items-center gap-2 ml-2">
-                        <ApexAthleticsLogo className="size-6 text-primary" />
-                        <h1 className="text-lg font-semibold font-headline">
-                        Apex Athletics
-                        </h1>
-                    </div>
+            <div className="flex items-center md:hidden">
+                <SidebarTrigger />
+                <div className="flex items-center gap-2 ml-2">
+                    <ApexAthleticsLogo className="size-6 text-primary" />
+                    <h1 className="text-lg font-semibold font-headline">
+                    Apex Athletics
+                    </h1>
                 </div>
-            )}
+            </div>
              {children}
             <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" asChild>
@@ -125,27 +112,29 @@ function Header({children}: {children?: ReactNode}) {
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="shrink-0" asChild>
-              <Link href="/">
-                <ApexAthleticsLogo className="size-6 text-primary" />
-              </Link>
-            </Button>
-            <h1 className="text-xl font-semibold font-headline">
-              Apex Athletics
-            </h1>
-          </div>
-        </SidebarHeader>
-        <SidebarContent>
-          <NavMenu />
-        </SidebarContent>
-      </Sidebar>
-      <SidebarInset>
-        <Header />
-        <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-      </SidebarInset>
+      <div className="flex">
+        <Sidebar>
+          <SidebarHeader>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="shrink-0" asChild>
+                <Link href="/">
+                  <ApexAthleticsLogo className="size-6 text-primary" />
+                </Link>
+              </Button>
+              <h1 className="text-xl font-semibold font-headline">
+                Apex Athletics
+              </h1>
+            </div>
+          </SidebarHeader>
+          <SidebarContent>
+            <NavMenu />
+          </SidebarContent>
+        </Sidebar>
+        <SidebarInset>
+          <Header />
+          <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+        </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }
