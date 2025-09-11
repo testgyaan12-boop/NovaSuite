@@ -51,6 +51,7 @@ const navItems = [
 
 function NavMenu() {
   const pathname = usePathname();
+  const { setOpenMobile } = useSidebar();
 
   return (
       <SidebarMenu>
@@ -60,6 +61,7 @@ function NavMenu() {
                   asChild
                   isActive={pathname === item.href}
                   tooltip={item.label}
+                  onClick={() => setOpenMobile(false)}
                 >
                   <Link href={item.href}>
                     <item.icon />
