@@ -49,6 +49,7 @@ export async function analyzeNutrition(
 
 const prompt = ai.definePrompt({
   name: 'analyzeNutritionPrompt',
+  model: 'googleai/gemini-pro',
   input: {
     schema: z.object({
       imageDataUri: z.string().optional(),
@@ -56,9 +57,6 @@ const prompt = ai.definePrompt({
     }),
   },
   output: {schema: AnalyzeNutritionOutputSchema},
-  config: {
-    model: 'googleai/gemini-pro',
-  },
   prompt: `You are an expert nutritionist. Analyze the food item based on the provided image and/or name and return its estimated nutritional information. Identify the food and estimate its calories, protein, carbohydrates, fat, and fiber content.
 
 If an image is provided, it is the primary source of information. If a food name is also provided, use it as additional context to improve the analysis. If only a name is provided, use that.

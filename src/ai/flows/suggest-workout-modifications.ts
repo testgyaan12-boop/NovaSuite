@@ -47,11 +47,9 @@ export async function suggestWorkoutModifications(
 
 const prompt = ai.definePrompt({
   name: 'suggestWorkoutModificationsPrompt',
+  model: 'googleai/gemini-pro',
   input: {schema: SuggestWorkoutModificationsInputSchema},
   output: {schema: SuggestWorkoutModificationsOutputSchema},
-  config: {
-    model: 'googleai/gemini-pro',
-  },
   prompt: `You are a personal trainer who suggests modifications to workout plans based on user characteristics. 
 
   Given the following information about the user, suggest modifications to their workout plan. Explain your reasoning for each modification. The user retains full control over the final plan and your suggestions will be used for informational purposes only. Do not include any preamble or conversational filler. Use a JSON format in your response.
