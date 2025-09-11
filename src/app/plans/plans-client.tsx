@@ -667,7 +667,7 @@ export function PlansClient() {
       <div>
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
             <h2 className="text-2xl font-bold">Your Workout Plans</h2>
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                 <PlanEditor onSave={handleSavePlan} />
                 <AiExerciseFinder onSaveSuggestion={handleSaveSuggestion} />
                 <Button variant="outline" size="icon" onClick={requestNotificationPermission}>
@@ -688,23 +688,19 @@ export function PlansClient() {
             plans.map((plan) => (
                 <Card key={plan.id} className="flex flex-col">
                 <CardHeader>
-                    <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                            <CardTitle>{plan.name}</CardTitle>
-                            <CardDescription>{plan.description}</CardDescription>
-                        </div>
-                        <div className="flex gap-2 ml-2">
-                           <PlanEditor plan={plan} onSave={handleSavePlan} isIcon={true} />
-                           <AiSuggestions plan={plan} onUpdatePlan={handleSavePlan} />
-                            <Button
-                                variant="destructive"
-                                size="icon"
-                                onClick={() => handleDeletePlan(plan.id)}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </div>
+                    <div className="flex justify-end gap-2">
+                        <PlanEditor plan={plan} onSave={handleSavePlan} isIcon={true} />
+                        <AiSuggestions plan={plan} onUpdatePlan={handleSavePlan} />
+                        <Button
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => handleDeletePlan(plan.id)}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
                     </div>
+                    <CardTitle>{plan.name}</CardTitle>
+                    <CardDescription>{plan.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow">
                     <ul className="space-y-1 text-sm text-muted-foreground">
