@@ -34,6 +34,7 @@ import { ApexAthleticsLogo } from "@/components/icons/logo";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import type { ReactNode } from "react";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -120,7 +121,7 @@ function Header() {
     )
 }
 
-function AppLayoutContent({ children }: { children: React.ReactNode }) {
+function AppLayoutContent({ children }: { children: ReactNode }) {
     return (
          <div className="flex h-full w-full">
             <Sidebar>
