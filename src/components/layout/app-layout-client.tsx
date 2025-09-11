@@ -41,6 +41,7 @@ import { Sheet, SheetContent } from "../ui/sheet";
 import { useSidebar } from "../ui/sidebar";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -54,6 +55,14 @@ const navItems = [
   { href: "/gyms", label: "Gyms", icon: Store },
   { href: "/membership", label: "Membership", icon: IdCard },
 ];
+
+const bottomNavItems = [
+  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/schedule", label: "Schedule", icon: Calendar },
+  { href: "/workouts", label: "Workouts", icon: Dumbbell },
+  { href: "/plans", label: "Plans", icon: ClipboardList },
+  { href: "/profile", label: "Profile", icon: User },
+]
 
 function NavMenu() {
   const pathname = usePathname();
@@ -129,6 +138,25 @@ function MobileSheet({ children }: { children: ReactNode }) {
     );
 }
 
+function BottomNavBar() {
+  const pathname = usePathname();
+  return (
+    <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t z-50">
+      <nav className="flex justify-around items-center h-full">
+        {bottomNavItems.map((item) => {
+           const isActive = pathname === item.href;
+           return (
+              <Link href={item.href} key={item.label} className={cn("flex flex-col items-center justify-center gap-1 flex-1 h-full", isActive ? "text-primary" : "text-muted-foreground")}>
+                <item.icon className="size-5" />
+                <span className="text-xs">{item.label}</span>
+              </Link>
+           )
+        })}
+      </nav>
+    </div>
+  )
+}
+
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { isMobile, setOpenMobile } = useSidebar();
 
@@ -141,7 +169,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           setOpenMobile(true);
         }
       },
-      onDestroyed: () => {
+      onDestroyStarted: () => {
         if (isMobile) {
           setOpenMobile(false);
         }
@@ -220,9 +248,10 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
         </MobileSheet>
         <div className="flex flex-col flex-1">
           <Header />
-          <main className="flex-1 p-4 md:p-6 lg:p-8" id="main-content">{children}</main>
+          <main className="flex-1 p-4 md:p-6 lg:p-8 pb-20 md:pb-8" id="main-content">{children}</main>
         </div>
       </div>
+      <BottomNavBar />
       <Toaster />
     </>
   );
