@@ -129,15 +129,26 @@ function MobileSheet({ children }: { children: ReactNode }) {
     );
 }
 
-export function AppLayoutClient({ children }: { children: React.ReactNode }) {
-   const startTour = () => {
+function AppLayoutContent({ children }: { children: React.ReactNode }) {
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  const startTour = () => {
     const driverObj = driver({
       showProgress: true,
       allowClose: false,
+      onHighlightStarted: () => {
+        if (isMobile) {
+          setOpenMobile(true);
+        }
+      },
+      onDestroyed: () => {
+        if (isMobile) {
+          setOpenMobile(false);
+        }
+      },
       steps: [
-        { element: '#tour-start-button', popover: { title: 'Welcome to Apex Athletics!', description: 'Let\'s take a quick tour of the features.' } },
+        { popover: { title: 'Welcome to Apex Athletics!', description: 'Let\'s take a quick tour of the features.' } },
         { element: '#nav-dashboard', popover: { title: 'Dashboard', description: 'This is your main hub, showing a snapshot of your activity and goals.' } },
-        { element: '#main-content', popover: { title: 'Main Content Area', description: 'All the page content is displayed here. You can see your dashboard cards right now.' } },
         { element: '#nav-schedule', popover: { title: 'Schedule', description: 'Plan your weekly workouts using the interactive calendar.' } },
         { element: '#nav-workouts', popover: { title: 'Workouts', description: 'Log your daily training sessions and view your history.' } },
         { element: '#nav-plans', popover: { title: 'Plans', description: 'Create, manage, and get AI suggestions for your personalized workout routines.' } },
@@ -151,9 +162,9 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <SidebarProvider>
+    <>
       <div className="flex min-h-screen">
-         <Sidebar className="hidden md:flex">
+        <Sidebar className="hidden md:flex">
           <SidebarHeader>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" className="shrink-0" asChild>
@@ -169,50 +180,59 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
           <SidebarContent>
             <NavMenu />
           </SidebarContent>
-           <SidebarFooter>
-              <SidebarMenu>
-                  <SidebarMenuItem>
-                       <SidebarMenuButton onClick={startTour} id="tour-start-button">
-                          <Rocket />
-                          <span>Start Tour</span>
-                      </SidebarMenuButton>
-                  </SidebarMenuItem>
-              </SidebarMenu>
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={startTour} id="tour-start-button">
+                  <Rocket />
+                  <span>Start Tour</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
         <MobileSheet>
-             <SidebarHeader>
-                <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="shrink-0" asChild>
-                    <Link href="/">
-                    <ApexAthleticsLogo className="size-6 text-primary" />
-                    </Link>
-                </Button>
-                <h1 className="text-xl font-semibold font-headline">
-                    Apex Athletics
-                </h1>
-                </div>
-            </SidebarHeader>
-            <SidebarContent>
-                <NavMenu />
-            </SidebarContent>
-             <SidebarFooter>
-              <SidebarMenu>
-                  <SidebarMenuItem>
-                      <SidebarMenuButton onClick={startTour}>
-                          <Rocket />
-                          <span>Start Tour</span>
-                      </SidebarMenuButton>
-                  </SidebarMenuItem>
-              </SidebarMenu>
+          <SidebarHeader>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="shrink-0" asChild>
+                <Link href="/">
+                  <ApexAthleticsLogo className="size-6 text-primary" />
+                </Link>
+              </Button>
+              <h1 className="text-xl font-semibold font-headline">
+                Apex Athletics
+              </h1>
+            </div>
+          </SidebarHeader>
+          <SidebarContent>
+            <NavMenu />
+          </SidebarContent>
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={startTour}>
+                  <Rocket />
+                  <span>Start Tour</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarFooter>
         </MobileSheet>
         <div className="flex flex-col flex-1">
-            <Header />
-            <main className="flex-1 p-4 md:p-6 lg:p-8" id="main-content">{children}</main>
+          <Header />
+          <main className="flex-1 p-4 md:p-6 lg:p-8" id="main-content">{children}</main>
         </div>
       </div>
       <Toaster />
+    </>
+  );
+}
+
+
+export function AppLayoutClient({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarProvider>
+      <AppLayoutContent>{children}</AppLayoutContent>
     </SidebarProvider>
   );
 }
