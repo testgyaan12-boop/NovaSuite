@@ -91,6 +91,11 @@ function Header() {
                 </div>
             </div>
             <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="md:hidden" asChild>
+                    <Link href="/diet">
+                        <UtensilsCrossed />
+                    </Link>
+                </Button>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" id="profile-button">
