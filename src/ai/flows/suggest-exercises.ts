@@ -48,6 +48,9 @@ const prompt = ai.definePrompt({
     name: 'suggestExercisesPrompt',
     input: {schema: SuggestExercisesInputSchema},
     output: {schema: SuggestExercisesOutputSchema},
+    config: {
+        model: 'googleai/gemini-pro',
+    },
     prompt: `You are an expert personal trainer.
 
     Your task is to suggest a list of 5 diverse exercises for a specific muscle group or category.

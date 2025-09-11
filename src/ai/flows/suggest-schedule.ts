@@ -45,6 +45,9 @@ const prompt = ai.definePrompt({
     name: 'suggestSchedulePrompt',
     input: {schema: SuggestScheduleInputSchema},
     output: {schema: SuggestScheduleOutputSchema},
+    config: {
+        model: 'googleai/gemini-pro',
+    },
     prompt: `You are a world-class personal trainer creating a weekly workout schedule.
 
     Your task is to create an effective weekly workout schedule based on the user's goal, desired workout frequency, and the workout plans they have available.

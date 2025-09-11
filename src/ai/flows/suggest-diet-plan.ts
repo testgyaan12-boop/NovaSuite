@@ -64,6 +64,9 @@ const prompt = ai.definePrompt({
   name: 'suggestDietPlanPrompt',
   input: {schema: SuggestDietPlanInputSchema},
   output: {schema: SuggestDietPlanOutputSchema},
+  config: {
+    model: 'googleai/gemini-pro',
+  },
   prompt: `You are an expert nutritionist and personal trainer. Your task is to create a daily nutritional plan based on the user's profile and fitness goals.
 
   First, calculate the required daily macros (calories, protein, carbohydrates, fat) and provide a brief explanation for your recommendations.
