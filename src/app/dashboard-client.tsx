@@ -27,7 +27,7 @@ export function DashboardClient() {
   const lastBodyFat = progress.length > 0 ? progress[progress.length-1].bodyFat : null;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" id="dashboard-cards">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Log New Workout</CardTitle>

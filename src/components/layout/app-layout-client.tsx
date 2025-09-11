@@ -10,6 +10,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarTrigger,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -21,6 +22,7 @@ import {
   Store,
   IdCard,
   Calendar,
+  Rocket,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -36,6 +38,8 @@ import type { ReactNode } from "react";
 import { Toaster } from "../ui/toaster";
 import { Sheet, SheetContent } from "../ui/sheet";
 import { useSidebar } from "../ui/sidebar";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -56,7 +60,7 @@ function NavMenu() {
   return (
       <SidebarMenu>
             {navItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
+              <SidebarMenuItem key={item.href} id={`nav-${item.label.toLowerCase()}`}>
                 <SidebarMenuButton
                   asChild
                   isActive={pathname === item.href}
@@ -76,7 +80,7 @@ function NavMenu() {
 
 function Header() {
     return (
-        <header className="flex h-14 items-center justify-between p-2 border-b md:justify-end">
+        <header className="flex h-14 items-center justify-between p-2 border-b md:justify-end" id="app-header">
             <div className="flex items-center md:hidden">
                 <SidebarTrigger />
                 <div className="flex items-center gap-2 ml-2">
@@ -89,7 +93,7 @@ function Header() {
             <div className="flex items-center gap-2">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" id="profile-button">
                             <User />
                         </Button>
                     </DropdownMenuTrigger>
@@ -118,8 +122,25 @@ function MobileSheet({ children }: { children: ReactNode }) {
     );
 }
 
-
 export function AppLayoutClient({ children }: { children: React.ReactNode }) {
+   const startTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      steps: [
+        { element: '#tour-start-button', popover: { title: 'Welcome to Apex Athletics!', description: 'Let\'s take a quick tour of the features.' } },
+        { element: '#nav-dashboard', popover: { title: 'Dashboard', description: 'This is your main hub, showing a snapshot of your activity and goals.' } },
+        { element: '#main-content', popover: { title: 'Main Content Area', description: 'All the page content is displayed here. You can see your dashboard cards right now.' } },
+        { element: '#nav-schedule', popover: { title: 'Schedule', description: 'Plan your weekly workouts using the interactive calendar.' } },
+        { element: '#nav-workouts', popover: { title: 'Workouts', description: 'Log your daily training sessions and view your history.' } },
+        { element: '#nav-plans', popover: { title: 'Plans', description: 'Create, manage, and get AI suggestions for your personalized workout routines.' } },
+        { element: '#nav-diet', popover: { title: 'Diet', description: 'Manage your nutritional goals and get AI-powered diet plans.' } },
+        { element: '#profile-button', popover: { title: 'Your Profile', description: 'Access your profile settings and log out from here.' } },
+        { popover: { title: 'Tour Complete!', description: 'You\'re all set! Feel free to explore and start your fitness journey.' } }
+      ]
+    });
+    driverObj.drive();
+  }
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -139,6 +160,16 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
           <SidebarContent>
             <NavMenu />
           </SidebarContent>
+           <SidebarFooter>
+              <SidebarMenu>
+                  <SidebarMenuItem>
+                       <SidebarMenuButton onClick={startTour} id="tour-start-button">
+                          <Rocket />
+                          <span>Start Tour</span>
+                      </SidebarMenuButton>
+                  </SidebarMenuItem>
+              </SidebarMenu>
+          </SidebarFooter>
         </Sidebar>
         <MobileSheet>
              <SidebarHeader>
@@ -156,10 +187,20 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
             <SidebarContent>
                 <NavMenu />
             </SidebarContent>
+             <SidebarFooter>
+              <SidebarMenu>
+                  <SidebarMenuItem>
+                      <SidebarMenuButton onClick={startTour}>
+                          <Rocket />
+                          <span>Start Tour</span>
+                      </SidebarMenuButton>
+                  </SidebarMenuItem>
+              </SidebarMenu>
+          </SidebarFooter>
         </MobileSheet>
         <div className="flex flex-col flex-1">
             <Header />
-            <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+            <main className="flex-1 p-4 md:p-6 lg:p-8" id="main-content">{children}</main>
         </div>
       </div>
       <Toaster />
