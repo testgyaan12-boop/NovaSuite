@@ -17,6 +17,7 @@ export function ProfileClient() {
     {
       age: 25,
       height: 180,
+      weight: 80,
       sex: "male",
     }
   );
@@ -45,7 +46,7 @@ export function ProfileClient() {
             <Card>
                 <CardHeader>
                     <CardTitle>Personal Information</CardTitle>
-                    <CardDescription>Update your age, height, and sex.</CardDescription>
+                    <CardDescription>Update your age, height, sex, and weight.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSave} className="space-y-4">
@@ -69,6 +70,17 @@ export function ProfileClient() {
                                 value={localProfile.height || ""}
                                 onChange={handleChange}
                                 placeholder="e.g. 180"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="weight">Weight (kg)</Label>
+                            <Input
+                                id="weight"
+                                name="weight"
+                                type="number"
+                                value={localProfile.weight || ""}
+                                onChange={handleChange}
+                                placeholder="e.g. 80"
                             />
                         </div>
                         <div className="space-y-2">

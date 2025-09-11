@@ -35,6 +35,7 @@ export interface DietPlan {
   calories: number;
   protein: number;
   fat: number;
+  carbohydrates: number;
 }
 
 export interface ProgressLog {
@@ -46,6 +47,7 @@ export interface ProgressLog {
 export interface UserProfile {
   age?: number;
   height?: number;
+  weight?: number;
   sex?: 'male' | 'female';
 }
 

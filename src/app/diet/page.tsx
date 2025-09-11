@@ -6,7 +6,7 @@ export default function DietPage() {
     <div className="flex flex-col gap-8">
       <PageHeader
         title="Diet Plan"
-        description="Set and track your daily nutrition goals."
+        description="Set your nutrition goals manually or get a personalized plan from our AI."
       />
       <DietClient />
     </div>
