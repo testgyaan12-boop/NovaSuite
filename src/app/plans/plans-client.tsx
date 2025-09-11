@@ -158,11 +158,9 @@ function PlanEditor({
             <Button variant="outline" size="icon">
               <Pencil className="h-4 w-4" />
             </Button>
-        ) : plan ? (
-          <Button variant="outline">Edit Plan</Button>
         ) : (
           <Button>
-            <Plus className="mr-2 h-4 w-4" /> Create New Plan
+            <Plus className="mr-2 h-4 w-4" /> <span>Create New Plan</span>
           </Button>
         )}
       </DialogTrigger>
@@ -479,8 +477,9 @@ function AiExerciseFinder({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline">
-                    <Search className="mr-2" /> Find New Exercises
+                <Button variant="outline" size="icon" className="sm:w-auto sm:px-4">
+                    <Search className="sm:mr-2" />
+                    <span className="sr-only sm:not-sr-only">Find New Exercises</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md md:max-w-2xl">
