@@ -47,7 +47,6 @@ const navItems = [
   { href: "/nutrition", label: "Nutrition", icon: Scan },
 ];
 
-
 function NavMenu() {
   const pathname = usePathname();
   const { setOpenMobile, isMobile } = useSidebar();
