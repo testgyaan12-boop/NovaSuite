@@ -18,9 +18,9 @@ import {
   LineChart,
   UtensilsCrossed,
   User,
-  Scan,
   Store,
   IdCard,
+  Calendar,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -39,6 +39,7 @@ import { useSidebar } from "../ui/sidebar";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/schedule", label: "Schedule", icon: Calendar },
   { href: "/workouts", label: "Workouts", icon: Dumbbell },
   { href: "/plans", label: "Plans", icon: ClipboardList },
   { href: "/diet", label: "Diet", icon: UtensilsCrossed },
@@ -86,11 +87,6 @@ function Header() {
                 </div>
             </div>
             <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href="/nutrition">
-                        <Scan />
-                    </Link>
-                </Button>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
