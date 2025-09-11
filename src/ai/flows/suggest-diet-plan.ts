@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const SuggestDietPlanInputSchema = z.object({
+const SuggestDietPlanInputSchema = z.object({
   age: z.number().describe('The age of the user in years.'),
   height: z.number().describe('The height of the user in centimeters.'),
   weight: z.number().describe('The weight of the user in kilograms.'),
@@ -25,7 +25,7 @@ export const SuggestDietPlanInputSchema = z.object({
 });
 export type SuggestDietPlanInput = z.infer<typeof SuggestDietPlanInputSchema>;
 
-export const SuggestDietPlanOutputSchema = z.object({
+const SuggestDietPlanOutputSchema = z.object({
   calories: z.number().describe('The suggested daily calorie intake in kcal.'),
   protein: z.number().describe('The suggested daily protein intake in grams.'),
   carbohydrates: z
