@@ -154,7 +154,7 @@ const SidebarProvider = React.forwardRef<
                 <SheetContent
                     data-sidebar="sidebar"
                     data-mobile="true"
-                    className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground"
+                    className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground flex flex-col md:hidden"
                     style={
                     {
                         "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -162,14 +162,7 @@ const SidebarProvider = React.forwardRef<
                     }
                     side={side}
                 >
-                    {isMobile && React.Children.map(children, child => {
-                        if (React.isValidElement(child) && (child.type === Sidebar)) {
-                             return React.cloneElement(child as React.ReactElement<any>, {
-                                className: "flex md:hidden h-full"
-                            });
-                        }
-                        return null;
-                    })}
+                  {children}
                 </SheetContent>
             </Sheet>
             {children}
@@ -717,3 +710,5 @@ export {
   SidebarTrigger,
   useSidebar,
 }
+
+    
