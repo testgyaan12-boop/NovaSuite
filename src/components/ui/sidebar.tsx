@@ -150,22 +150,7 @@ const SidebarProvider = React.forwardRef<
             ref={ref}
             {...props}
           >
-             <Sheet open={openMobile} onOpenChange={setOpenMobile}>
-                <SheetContent
-                    data-sidebar="sidebar"
-                    data-mobile="true"
-                    className="w-[--sidebar-width] bg-sidebar text-sidebar-foreground flex flex-col p-0"
-                    style={
-                    {
-                        "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-                    } as React.CSSProperties
-                    }
-                    side={side}
-                >
-                  {children}
-                </SheetContent>
-            </Sheet>
-            <div className="hidden md:block">{children}</div>
+             {children}
           </div>
         </TooltipProvider>
       </SidebarContext.Provider>
@@ -212,7 +197,7 @@ const SidebarTrigger = React.forwardRef<
       data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn("h-8 w-8 md:hidden", className)}
+      className={cn("h-8 w-8", className)}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()

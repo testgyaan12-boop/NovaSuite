@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -33,6 +34,8 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import type { ReactNode } from "react";
 import { Toaster } from "../ui/toaster";
+import { Sheet, SheetContent } from "../ui/sheet";
+import { useSidebar } from "../ui/sidebar";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -107,11 +110,23 @@ function Header() {
     )
 }
 
+function MobileSheet({ children }: { children: ReactNode }) {
+    const { openMobile, setOpenMobile } = useSidebar();
+    return (
+        <Sheet open={openMobile} onOpenChange={setOpenMobile}>
+            <SheetContent side="left" className="w-[18rem] bg-sidebar text-sidebar-foreground flex flex-col p-0">
+                {children}
+            </SheetContent>
+        </Sheet>
+    );
+}
+
+
 export function AppLayoutClient({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
-        <Sidebar>
+         <Sidebar className="hidden md:flex">
           <SidebarHeader>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" className="shrink-0" asChild>
@@ -128,6 +143,23 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
             <NavMenu />
           </SidebarContent>
         </Sidebar>
+        <MobileSheet>
+             <SidebarHeader>
+                <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="shrink-0" asChild>
+                    <Link href="/">
+                    <ApexAthleticsLogo className="size-6 text-primary" />
+                    </Link>
+                </Button>
+                <h1 className="text-xl font-semibold font-headline">
+                    Apex Athletics
+                </h1>
+                </div>
+            </SidebarHeader>
+            <SidebarContent>
+                <NavMenu />
+            </SidebarContent>
+        </MobileSheet>
         <div className="flex flex-col flex-1">
             <Header />
             <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
