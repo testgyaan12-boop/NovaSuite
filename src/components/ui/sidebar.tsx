@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Tooltip,
@@ -162,7 +162,14 @@ const SidebarProvider = React.forwardRef<
                     }
                     side={side}
                 >
-                    {children}
+                    {isMobile && React.Children.map(children, child => {
+                        if (React.isValidElement(child) && (child.type === Sidebar)) {
+                             return React.cloneElement(child as React.ReactElement<any>, {
+                                className: "flex md:hidden h-full"
+                            });
+                        }
+                        return null;
+                    })}
                 </SheetContent>
             </Sheet>
             {children}
@@ -263,12 +270,15 @@ const SidebarInset = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { asChild?: boolean }
 >(({ className, asChild = false, ...props }, ref) => {
+  const { isMobile, state } = useSidebar()
   const Comp = asChild ? Slot : "div"
+
   return (
     <Comp
       ref={ref}
       className={cn(
-        "relative flex min-h-svh flex-1 flex-col bg-background",
+        "relative flex min-h-svh flex-1 flex-col bg-background transition-[margin-left] duration-300",
+         !isMobile && state === "expanded" ? "md:ml-[--sidebar-width]" : "md:ml-[--sidebar-width-icon]",
         className
       )}
       {...props}
