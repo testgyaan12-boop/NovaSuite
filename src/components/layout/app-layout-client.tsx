@@ -24,6 +24,7 @@ import {
   Calendar,
   Rocket,
   Camera,
+  MoreHorizontal,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -36,8 +37,9 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { Toaster } from "../ui/toaster";
-import { Sheet, SheetContent } from "../ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { useSidebar } from "../ui/sidebar";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
@@ -54,15 +56,11 @@ const navItems = [
   { href: "/trainer", label: "Trainer", icon: User },
   { href: "/gyms", label: "Gyms", icon: Store },
   { href: "/membership", label: "Membership", icon: IdCard },
+  { href: "/profile", label: "Profile", icon: User },
 ];
 
-const bottomNavItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/schedule", label: "Schedule", icon: Calendar },
-  { href: "/workouts", label: "Workouts", icon: Dumbbell },
-  { href: "/plans", label: "Plans", icon: ClipboardList },
-  { href: "/profile", label: "Profile", icon: User },
-]
+const bottomNavPrimaryItems = navItems.slice(0, 4);
+const moreNavItems = navItems.slice(4);
 
 function NavMenu() {
   const pathname = usePathname();
@@ -140,10 +138,13 @@ function MobileSheet({ children }: { children: ReactNode }) {
 
 function BottomNavBar() {
   const pathname = usePathname();
+  const [moreOpen, setMoreOpen] = useState(false);
+
   return (
+    <>
     <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t z-50">
       <nav className="flex justify-around items-center h-full">
-        {bottomNavItems.map((item) => {
+        {bottomNavPrimaryItems.map((item) => {
            const isActive = pathname === item.href;
            return (
               <Link href={item.href} key={item.label} className={cn("flex flex-col items-center justify-center gap-1 flex-1 h-full", isActive ? "text-primary" : "text-muted-foreground")}>
@@ -152,8 +153,38 @@ function BottomNavBar() {
               </Link>
            )
         })}
+        <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
+            <SheetTrigger asChild>
+                <button className={cn("flex flex-col items-center justify-center gap-1 flex-1 h-full text-muted-foreground")}>
+                    <MoreHorizontal className="size-5" />
+                    <span className="text-xs">More</span>
+                </button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-auto">
+                <SheetHeader>
+                    <SheetTitle>More</SheetTitle>
+                </SheetHeader>
+                <div className="grid grid-cols-4 gap-4 py-4">
+                    {moreNavItems.map((item) => {
+                        const isActive = pathname === item.href;
+                        return (
+                            <Link 
+                                href={item.href} 
+                                key={item.label} 
+                                className={cn("flex flex-col items-center justify-center gap-1 p-2 rounded-md", isActive ? "text-primary bg-muted" : "text-muted-foreground")}
+                                onClick={() => setMoreOpen(false)}
+                            >
+                                <item.icon className="size-6" />
+                                <span className="text-xs text-center">{item.label}</span>
+                            </Link>
+                        )
+                    })}
+                </div>
+            </SheetContent>
+        </Sheet>
       </nav>
     </div>
+    </>
   )
 }
 
@@ -169,9 +200,16 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           setOpenMobile(true);
         }
       },
+       onPopoverRender: (popover) => {
+        popover.wrapper.style.borderRadius = 'var(--radius)';
+        popover.wrapper.style.backgroundColor = 'hsl(var(--background))';
+      },
       onDestroyStarted: () => {
         if (isMobile) {
           setOpenMobile(false);
+        }
+        if (!driverObj.isLastStep()) {
+          driverObj.destroy();
         }
       },
       steps: [
