@@ -83,3 +83,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .loader-bar {
+    @apply h-full bg-primary;
+    animation: loader-bar-animation 1.5s infinite ease-in-out;
+  }
+
+  @keyframes loader-bar-animation {
+    0% {
+      width: 0%;
+      left: 0;
+    }
+    50% {
+      width: 100%;
+      left: 0;
+    }
+    100% {
+      width: 0%;
+      left: 100%;
+    }
+  }
+}

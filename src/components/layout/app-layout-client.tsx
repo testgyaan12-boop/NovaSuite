@@ -37,7 +37,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "../ui/toaster";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { useSidebar } from "../ui/sidebar";
@@ -188,6 +188,46 @@ function BottomNavBar() {
   )
 }
 
+function PageLoader() {
+    const pathname = usePathname();
+    const [isNavigating, setIsNavigating] = useState(false);
+
+    useEffect(() => {
+        setIsNavigating(false);
+    }, [pathname]);
+
+    useEffect(() => {
+        const handleAnchorClick = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            const anchor = target.closest('a');
+            if (anchor && anchor.href && anchor.target !== '_blank' && new URL(anchor.href).origin === window.location.origin && new URL(anchor.href).pathname !== pathname) {
+                setIsNavigating(true);
+            }
+        };
+
+        const handleMutation: MutationCallback = () => {
+             const anchors = document.querySelectorAll('a');
+             anchors.forEach(anchor => anchor.addEventListener('click', handleAnchorClick));
+        };
+
+        document.body.addEventListener('click', handleAnchorClick);
+        const observer = new MutationObserver(handleMutation);
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        return () => {
+            document.body.removeEventListener('click', handleAnchorClick);
+            observer.disconnect();
+        };
+
+    }, [pathname]);
+
+    return isNavigating ? (
+        <div className="fixed top-0 left-0 w-full h-1 z-50">
+            <div className="loader-bar"></div>
+        </div>
+    ) : null;
+}
+
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { isMobile, setOpenMobile } = useSidebar();
 
@@ -205,7 +245,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
         popover.wrapper.style.backgroundColor = 'hsl(var(--background))';
       },
       onDestroyStarted: () => {
-        if (isMobile) {
+        if (!driverObj.isLastStep() || isMobile) {
           setOpenMobile(false);
         }
         if (!driverObj.isLastStep()) {
@@ -285,6 +325,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           </SidebarFooter>
         </MobileSheet>
         <div className="flex flex-col flex-1">
+          <PageLoader />
           <Header />
           <main className="flex-1 p-4 md:p-6 lg:p-8 pb-20 md:pb-8" id="main-content">{children}</main>
         </div>
