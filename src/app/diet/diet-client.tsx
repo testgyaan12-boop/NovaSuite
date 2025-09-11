@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
-import type { DietPlan, UserProfile } from "@/lib/types";
-import { Beef, Droplets, Flame, Sparkles, Loader2, Utensils } from "lucide-react";
+import type { DietPlan, UserProfile, SavedDietPlan } from "@/lib/types";
+import { Beef, Droplets, Flame, Sparkles, Loader2, Utensils, Save, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { suggestDietPlan, type SuggestDietPlanOutput } from "@/ai/flows/suggest-diet-plan";
+import { suggestDietPlan, type SuggestDietPlanOutput, type SuggestDietPlanInput } from "@/ai/flows/suggest-diet-plan";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -110,6 +110,7 @@ function ManualDietCard() {
 function AiDietPlanner() {
   const [userProfile] = useLocalStorage<UserProfile>('user-profile', {});
   const [, setDietPlan] = useLocalStorage<DietPlan>('diet-plan', { calories: 2000, protein: 150, fat: 60, carbohydrates: 250 });
+  const [savedPlans, setSavedPlans] = useLocalStorage<SavedDietPlan[]>("saved-diet-plans", []);
   const [isLoading, setIsLoading] = useState(false);
   const [suggestion, setSuggestion] = useState<SuggestDietPlanOutput | null>(null);
   const { toast } = useToast();
@@ -137,7 +138,6 @@ function AiDietPlanner() {
     setIsLoading(true);
     setSuggestion(null);
 
-    // Basic validation
     if (!formState.age || !formState.height || !formState.weight || !formState.sex || !formState.activityLevel || !formState.goal) {
         toast({ title: "Missing Information", description: "Please fill out all profile fields.", variant: "destructive" });
         setIsLoading(false);
@@ -168,6 +168,29 @@ function AiDietPlanner() {
         description: "Your daily goals have been updated with the AI suggestion."
       });
     }
+  }
+
+  const handleSaveSuggestion = () => {
+    if (suggestion) {
+      const newSavedPlan: SavedDietPlan = {
+        ...suggestion,
+        id: crypto.randomUUID(),
+        savedAt: new Date().toISOString(),
+      };
+      setSavedPlans([newSavedPlan, ...savedPlans]);
+      toast({
+        title: "Suggestion Saved!",
+        description: "The AI-generated diet plan has been saved."
+      });
+    }
+  }
+
+  const handleDeletePlan = (id: string) => {
+    setSavedPlans(savedPlans.filter(p => p.id !== id));
+    toast({
+        title: "Plan Deleted",
+        variant: "destructive"
+    });
   }
 
   return (
@@ -256,32 +279,16 @@ function AiDietPlanner() {
         <Card>
           <CardHeader>
             <CardTitle>AI Diet Suggestion</CardTitle>
-            <CardDescription>Here's a plan tailored to your profile and goals.</CardDescription>
+            <CardDescription>Here's a plan tailored to your profile and goals. You can save it or apply the daily totals.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
                 <p className="text-sm text-muted-foreground italic mb-4">{suggestion.explanation}</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div className="bg-muted p-3 rounded-lg">
-                    <p className="text-sm font-medium">Calories</p>
-                    <p className="text-2xl font-bold">{suggestion.dailySummary.calories}</p>
-                    <p className="text-xs text-muted-foreground">kcal</p>
-                </div>
-                <div className="bg-muted p-3 rounded-lg">
-                    <p className="text-sm font-medium">Protein</p>
-                    <p className="text-2xl font-bold">{suggestion.dailySummary.protein}</p>
-                    <p className="text-xs text-muted-foreground">grams</p>
-                </div>
-                <div className="bg-muted p-3 rounded-lg">
-                    <p className="text-sm font-medium">Carbs</p>
-                    <p className="text-2xl font-bold">{suggestion.dailySummary.carbohydrates}</p>
-                    <p className="text-xs text-muted-foreground">grams</p>
-                </div>
-                <div className="bg-muted p-3 rounded-lg">
-                    <p className="text-sm font-medium">Fat</p>
-                    <p className="text-2xl font-bold">{suggestion.dailySummary.fat}</p>
-                    <p className="text-xs text-muted-foreground">grams</p>
-                </div>
+                  <div className="bg-muted p-3 rounded-lg"><p className="text-sm font-medium">Calories</p><p className="text-2xl font-bold">{suggestion.dailySummary.calories}</p><p className="text-xs text-muted-foreground">kcal</p></div>
+                  <div className="bg-muted p-3 rounded-lg"><p className="text-sm font-medium">Protein</p><p className="text-2xl font-bold">{suggestion.dailySummary.protein}</p><p className="text-xs text-muted-foreground">grams</p></div>
+                  <div className="bg-muted p-3 rounded-lg"><p className="text-sm font-medium">Carbs</p><p className="text-2xl font-bold">{suggestion.dailySummary.carbohydrates}</p><p className="text-xs text-muted-foreground">grams</p></div>
+                  <div className="bg-muted p-3 rounded-lg"><p className="text-sm font-medium">Fat</p><p className="text-2xl font-bold">{suggestion.dailySummary.fat}</p><p className="text-xs text-muted-foreground">grams</p></div>
                 </div>
             </div>
 
@@ -309,10 +316,69 @@ function AiDietPlanner() {
                 </Accordion>
             </div>
             
-            <Button onClick={handleAcceptSuggestion}>Accept Daily Totals</Button>
+            <div className="flex gap-2">
+                <Button onClick={handleAcceptSuggestion}>Accept Daily Totals</Button>
+                <Button variant="secondary" onClick={handleSaveSuggestion}><Save className="mr-2" /> Save Full Plan</Button>
+            </div>
           </CardContent>
         </Card>
       )}
+
+      {savedPlans.length > 0 && (
+          <div className="space-y-4">
+              <h2 className="text-2xl font-bold">Saved Diet Plans</h2>
+              {savedPlans.map(plan => (
+                  <Card key={plan.id}>
+                    <CardHeader>
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <CardTitle>AI-Generated Plan</CardTitle>
+                                <CardDescription>Saved on {new Date(plan.savedAt).toLocaleDateString()}</CardDescription>
+                            </div>
+                            <Button variant="destructive" size="icon" onClick={() => handleDeletePlan(plan.id)}>
+                                <Trash2 />
+                            </Button>
+                        </div>
+                    </CardHeader>
+                     <CardContent className="space-y-6">
+                        <div>
+                            <p className="text-sm text-muted-foreground italic mb-4">{plan.explanation}</p>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                              <div className="bg-muted p-3 rounded-lg"><p className="text-sm font-medium">Calories</p><p className="text-2xl font-bold">{plan.dailySummary.calories}</p><p className="text-xs text-muted-foreground">kcal</p></div>
+                              <div className="bg-muted p-3 rounded-lg"><p className="text-sm font-medium">Protein</p><p className="text-2xl font-bold">{plan.dailySummary.protein}</p><p className="text-xs text-muted-foreground">grams</p></div>
+                              <div className="bg-muted p-3 rounded-lg"><p className="text-sm font-medium">Carbs</p><p className="text-2xl font-bold">{plan.dailySummary.carbohydrates}</p><p className="text-xs text-muted-foreground">grams</p></div>
+                              <div className="bg-muted p-3 rounded-lg"><p className="text-sm font-medium">Fat</p><p className="text-2xl font-bold">{plan.dailySummary.fat}</p><p className="text-xs text-muted-foreground">grams</p></div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2"><Utensils /> Sample Meal Plan</h3>
+                            <Accordion type="single" collapsible defaultValue="item-0" className="w-full">
+                                {plan.mealPlan.map((meal, index) => (
+                                    <AccordionItem value={`item-${index}`} key={index}>
+                                      <AccordionTrigger>
+                                            <div className="flex flex-col text-left">
+                                                <span className="font-semibold">{meal.time}</span>
+                                                <span className="text-sm text-muted-foreground">{meal.foodName}</span>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent>
+                                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm px-2">
+                                                <div><span className="font-medium">Calories:</span> {meal.calories} kcal</div>
+                                                <div><span className="font-medium">Protein:</span> {meal.protein} g</div>
+                                                <div><span className="font-medium">Carbs:</span> {meal.carbohydrates} g</div>
+                                                <div><span className="font-medium">Fat:</span> {meal.fat} g</div>
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        </div>
+                    </CardContent>
+                  </Card>
+              ))}
+          </div>
+      )}
+
     </div>
   )
 }

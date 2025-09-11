@@ -1,3 +1,5 @@
+import { type SuggestDietPlanOutput } from "@/ai/flows/suggest-diet-plan";
+
 export interface ExerciseSet {
   id: string;
   reps: number;
@@ -62,4 +64,9 @@ export interface MembershipDetails {
   trainerFee: number;
   attendance: { date: string }[];
   renewalHistory: { date: string; amount: number }[];
+}
+
+export interface SavedDietPlan extends SuggestDietPlanOutput {
+    id: string;
+    savedAt: string; // ISO string
 }
