@@ -46,7 +46,6 @@ const navItems = [
   { href: "/trainer", label: "Trainer", icon: User },
   { href: "/gyms", label: "Gyms", icon: Store },
   { href: "/membership", label: "Membership", icon: IdCard },
-  { href: "/nutrition", label: "Nutrition", icon: Scan },
 ];
 
 function NavMenu() {
