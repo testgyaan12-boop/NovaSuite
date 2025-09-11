@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -120,8 +121,9 @@ function Header() {
     )
 }
 
-function AppLayoutContent({ children }: { children: ReactNode }) {
-    return (
+export function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarProvider>
          <div className="flex h-full w-full">
             <Sidebar>
               <SidebarHeader>
@@ -145,13 +147,8 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
               <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
             </SidebarInset>
       </div>
-    )
-}
-
-export function AppLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <SidebarProvider>
-      <AppLayoutContent>{children}</AppLayoutContent>
     </SidebarProvider>
   );
 }
+
+    

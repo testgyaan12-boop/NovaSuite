@@ -54,6 +54,7 @@ const SidebarProvider = React.forwardRef<
     defaultOpen?: boolean
     open?: boolean
     onOpenChange?: (open: boolean) => void
+    side?: "left" | "right"
   }
 >(
   (
@@ -64,6 +65,7 @@ const SidebarProvider = React.forwardRef<
       className,
       style,
       children,
+      side = "left",
       ...props
     },
     ref
@@ -131,25 +133,43 @@ const SidebarProvider = React.forwardRef<
     )
 
     return (
-      <TooltipProvider delayDuration={0}>
-        <div
-          style={
-            {
-              "--sidebar-width": SIDEBAR_WIDTH,
-              "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
-              ...style,
-            } as React.CSSProperties
-          }
-          className={cn(
-            "group/sidebar-wrapper flex w-full flex-col md:flex-row",
-            className
-          )}
-          ref={ref}
-          {...props}
-        >
-          {children}
-        </div>
-      </TooltipProvider>
+      <SidebarContext.Provider value={contextValue}>
+        <TooltipProvider delayDuration={0}>
+          <div
+            style={
+              {
+                "--sidebar-width": SIDEBAR_WIDTH,
+                "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+                ...style,
+              } as React.CSSProperties
+            }
+            className={cn(
+              "group/sidebar-wrapper flex w-full flex-col md:flex-row",
+              className
+            )}
+            ref={ref}
+            {...props}
+          >
+            <Sheet open={openMobile} onOpenChange={setOpenMobile}>
+              <SheetContent
+                data-sidebar="sidebar"
+                data-mobile="true"
+                className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground"
+                style={
+                  {
+                    "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+                  } as React.CSSProperties
+                }
+                side={side}
+              >
+                {children}
+              </SheetContent>
+            </Sheet>
+
+            {children}
+          </div>
+        </TooltipProvider>
+      </SidebarContext.Provider>
     )
   }
 )
@@ -161,26 +181,10 @@ const Sidebar = React.forwardRef<
     side?: "left" | "right"
   }
 >(({ side = "left", className, children, ...props }, ref) => {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const { isMobile, state } = useSidebar()
 
   if (isMobile) {
-    return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-        <SheetContent
-          data-sidebar="sidebar"
-          data-mobile="true"
-          className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground"
-          style={
-            {
-              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-            } as React.CSSProperties
-          }
-          side={side}
-        >
-          <div className="flex h-full w-full flex-col">{children}</div>
-        </SheetContent>
-      </Sheet>
-    )
+    return null
   }
 
   return (
@@ -704,3 +708,5 @@ export {
   SidebarTrigger,
   useSidebar,
 }
+
+    
