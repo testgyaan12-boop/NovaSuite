@@ -165,7 +165,7 @@ const SidebarProvider = React.forwardRef<
                   {children}
                 </SheetContent>
             </Sheet>
-            {children}
+            <div className="hidden md:flex">{children}</div>
           </div>
         </TooltipProvider>
       </SidebarContext.Provider>

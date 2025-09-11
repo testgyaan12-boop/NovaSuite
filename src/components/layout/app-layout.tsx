@@ -80,7 +80,7 @@ function NavMenu() {
   )
 }
 
-function Header() {
+function Header({children}: {children?: ReactNode}) {
     const { isMobile } = useSidebar();
     return (
         <header className="flex items-center justify-between p-2 border-b md:justify-end">
@@ -95,6 +95,7 @@ function Header() {
                     </div>
                 </div>
             )}
+             {children}
             <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" asChild>
                     <Link href="/nutrition">
@@ -124,29 +125,27 @@ function Header() {
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="flex h-full w-full">
-        <Sidebar>
-          <SidebarHeader>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="shrink-0" asChild>
-                <Link href="/">
-                  <ApexAthleticsLogo className="size-6 text-primary" />
-                </Link>
-              </Button>
-              <h1 className="text-xl font-semibold font-headline">
-                Apex Athletics
-              </h1>
-            </div>
-          </SidebarHeader>
-          <SidebarContent>
-            <NavMenu />
-          </SidebarContent>
-        </Sidebar>
-        <SidebarInset>
-          <Header />
-          <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-        </SidebarInset>
-      </div>
+      <Sidebar>
+        <SidebarHeader>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" className="shrink-0" asChild>
+              <Link href="/">
+                <ApexAthleticsLogo className="size-6 text-primary" />
+              </Link>
+            </Button>
+            <h1 className="text-xl font-semibold font-headline">
+              Apex Athletics
+            </h1>
+          </div>
+        </SidebarHeader>
+        <SidebarContent>
+          <NavMenu />
+        </SidebarContent>
+      </Sidebar>
+      <SidebarInset>
+        <Header />
+        <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }
