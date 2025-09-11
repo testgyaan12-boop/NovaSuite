@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const EXERCISE_CATEGORIES = [
+const EXERCISE_CATEGORIES = [
   'Chest',
   'Back',
   'Shoulders',

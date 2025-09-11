@@ -41,10 +41,21 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { suggestWorkoutModifications } from "@/ai/flows/suggest-workout-modifications";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { suggestExercises, EXERCISE_CATEGORIES, type SuggestExercisesOutput } from "@/ai/flows/suggest-exercises";
+import { suggestExercises, type SuggestExercisesOutput } from "@/ai/flows/suggest-exercises";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Skeleton } from "@/components/ui/skeleton";
+
+const EXERCISE_CATEGORIES = [
+  'Chest',
+  'Back',
+  'Shoulders',
+  'Biceps',
+  'Triceps',
+  'Legs',
+  'Abs',
+  'Cardio',
+] as const;
 
 function PlanEditor({
   onSave,
