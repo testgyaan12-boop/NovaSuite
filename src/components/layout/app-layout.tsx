@@ -123,39 +123,38 @@ function Header() {
     )
 }
 
-export function AppLayout({ children }: { children: React.ReactNode }) {
-    
-    function AppLayoutContent({ children }: { children: React.ReactNode }) {
-        return (
-            <>
-                <Sidebar>
-                    <SidebarHeader>
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" className="shrink-0" asChild>
-                        <Link href="/">
-                            <ApexAthleticsLogo className="size-6 text-primary" />
-                        </Link>
-                        </Button>
-                        <h1 className="text-xl font-semibold font-headline">
-                        Apex Athletics
-                        </h1>
-                    </div>
-                    </SidebarHeader>
-                    <SidebarContent>
-                    <NavMenu />
-                    </SidebarContent>
-                </Sidebar>
-                <SidebarInset>
-                    <Header/>
-                    <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-                </SidebarInset>
-            </>
-        )
-    }
+function AppLayoutContent({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Sidebar>
+        <SidebarHeader>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" className="shrink-0" asChild>
+              <Link href="/">
+                <ApexAthleticsLogo className="size-6 text-primary" />
+              </Link>
+            </Button>
+            <h1 className="text-xl font-semibold font-headline">
+              Apex Athletics
+            </h1>
+          </div>
+        </SidebarHeader>
+        <SidebarContent>
+          <NavMenu />
+        </SidebarContent>
+      </Sidebar>
+      <SidebarInset>
+        <Header />
+        <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+      </SidebarInset>
+    </>
+  );
+}
 
+export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-        <AppLayoutContent>{children}</AppLayoutContent>
+      <AppLayoutContent>{children}</AppLayoutContent>
     </SidebarProvider>
   );
 }
