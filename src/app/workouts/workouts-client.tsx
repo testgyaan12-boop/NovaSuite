@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -212,35 +213,35 @@ export function WorkoutsClient() {
       <div className="space-y-4">
         <h3 className="text-2xl font-bold font-headline">Workout History</h3>
         {workouts.length === 0 ? (
-          <Card className="flex items-center justify-center p-10">
-            <CardContent>
+          <Card>
+            <CardContent className="p-10 text-center">
               <p className="text-muted-foreground">No workouts logged yet.</p>
             </CardContent>
           </Card>
         ) : (
           <Accordion type="single" collapsible className="w-full space-y-2">
             {workouts.map((log) => (
-              <AccordionItem value={log.id} key={log.id} className="border-b-0">
-                <Card>
-                  <AccordionTrigger className="p-4 hover:no-underline">
-                    <div className="flex flex-col text-left">
-                      <span className="font-bold text-lg">{log.name}</span>
-                      <span className="text-sm text-muted-foreground">{new Date(log.date).toLocaleString()}</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="p-4 pt-0">
-                    {log.notes && <p className="mb-4 text-sm text-muted-foreground italic">"{log.notes}"</p>}
-                    {log.exercises.map((ex) => (
-                      <div key={ex.id} className="mb-4">
-                        <h4 className="font-semibold mb-2">{ex.name}</h4>
-                        <ul className="space-y-1 text-sm list-disc list-inside">
-                          {ex.sets.map((s, i) => <li key={s.id}>{`Set ${i+1}: ${s.reps} reps @ ${s.weight} kg`}</li>)}
-                        </ul>
-                      </div>
-                    ))}
-                  </AccordionContent>
-                </Card>
-              </AccordionItem>
+               <Card key={log.id}>
+                <AccordionItem value={log.id} className="border-b-0">
+                    <AccordionTrigger className="p-4 hover:no-underline">
+                        <div className="flex flex-col text-left">
+                        <span className="font-bold text-lg">{log.name}</span>
+                        <span className="text-sm text-muted-foreground">{new Date(log.date).toLocaleString()}</span>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-4 pt-0">
+                        {log.notes && <p className="mb-4 text-sm text-muted-foreground italic">"{log.notes}"</p>}
+                        {log.exercises.map((ex) => (
+                        <div key={ex.id} className="mb-4">
+                            <h4 className="font-semibold mb-2">{ex.name}</h4>
+                            <ul className="space-y-1 text-sm list-disc list-inside">
+                            {ex.sets.map((s, i) => <li key={s.id}>{`Set ${i+1}: ${s.reps} reps @ ${s.weight} kg`}</li>)}
+                            </ul>
+                        </div>
+                        ))}
+                    </AccordionContent>
+                </AccordionItem>
+              </Card>
             ))}
           </Accordion>
         )}
