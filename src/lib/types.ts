@@ -1,4 +1,6 @@
-import { type SuggestDietPlanOutput } from "@/ai/flows/suggest-diet-plan";
+
+import { type SuggestDietPlanOutput, type SuggestDietPlanInput } from "@/ai/flows/suggest-diet-plan";
+import { type SuggestScheduleOutput } from "@/ai/flows/suggest-schedule";
 
 export interface ExerciseSet {
   id: string;
@@ -107,3 +109,12 @@ export interface ScheduledSession {
     sessionTime: string;
     createdAt: string; // ISO string
 }
+
+export interface SavedSchedule extends SuggestScheduleOutput {
+    id: string;
+    savedAt: string; // ISO string
+    goal: SuggestDietPlanInput['goal'];
+    daysPerWeek: number;
+}
+
+    

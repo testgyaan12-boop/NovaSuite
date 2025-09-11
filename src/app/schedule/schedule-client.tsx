@@ -9,9 +9,10 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from "@/components/ui/card";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
-import type { WorkoutPlan, ScheduledWorkout, UserProfile } from "@/lib/types";
+import type { WorkoutPlan, ScheduledWorkout, UserProfile, SavedSchedule } from "@/lib/types";
 import { Calendar } from "@/components/ui/calendar";
 import { addDays, format, isSameDay } from "date-fns";
 import {
@@ -32,11 +33,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Sparkles, Trash2 } from "lucide-react";
+import { Loader2, Sparkles, Trash2, Save } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { suggestSchedule, type SuggestScheduleInput, type SuggestScheduleOutput } from "@/ai/flows/suggest-schedule";
 import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 
 function AiScheduleGenerator({
   onApplySchedule,
@@ -50,6 +53,7 @@ function AiScheduleGenerator({
   const [goal, setGoal] = useState<SuggestScheduleInput['goal']>('maintain_weight');
   const [plans] = useLocalStorage<WorkoutPlan[]>("workout-plans", []);
   const [userProfile] = useLocalStorage<UserProfile>('user-profile', {});
+  const [savedSchedules, setSavedSchedules] = useLocalStorage<SavedSchedule[]>("saved-schedules", []);
 
   const { toast } = useToast();
 
@@ -89,8 +93,22 @@ function AiScheduleGenerator({
   const handleApply = () => {
     if (suggestion) {
       onApplySchedule(suggestion.schedule);
-      toast({ title: "Schedule Applied!", description: "Your calendar has been updated with the suggested schedule." });
+      toast({ title: "Schedule Applied!", description: "Your calendar has been updated for the current week." });
       setOpen(false);
+    }
+  }
+
+  const handleSave = () => {
+    if (suggestion) {
+        const newSavedSchedule: SavedSchedule = {
+            ...suggestion,
+            id: crypto.randomUUID(),
+            savedAt: new Date().toISOString(),
+            goal: goal,
+            daysPerWeek: daysPerWeek,
+        };
+        setSavedSchedules([newSavedSchedule, ...savedSchedules]);
+        toast({ title: "Schedule Saved!", description: "The suggested schedule has been saved." });
     }
   }
 
@@ -101,14 +119,14 @@ function AiScheduleGenerator({
           <Sparkles className="mr-2" /> AI Schedule Suggestion
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-md md:max-w-xl">
         <DialogHeader>
           <DialogTitle>AI Weekly Schedule Generator</DialogTitle>
           <DialogDescription>
             Let AI create a balanced workout week for you.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto px-1">
           <div className="space-y-2">
             <Label>Fitness Goal</Label>
              <Select value={goal} onValueChange={(v) => setGoal(v as any)}>
@@ -145,7 +163,7 @@ function AiScheduleGenerator({
                   {suggestion.schedule.map(day => {
                     const plan = plans.find(p => p.id === day.planId);
                     return (
-                       <li key={day.dayOfWeek} className="flex justify-between items-center">
+                       <li key={day.dayOfWeek} className="flex justify-between items-center text-sm">
                           <span className="font-medium">{day.dayOfWeek}</span>
                           {plan ? <Badge>{plan.name}</Badge> : <Badge variant="secondary">Rest</Badge>}
                        </li>
@@ -153,16 +171,14 @@ function AiScheduleGenerator({
                   })}
                 </ul>
               </CardContent>
+              <CardFooter className="flex-col sm:flex-row gap-2">
+                  <Button onClick={handleApply} className="w-full sm:w-auto">Apply to Week</Button>
+                  <Button onClick={handleSave} variant="secondary" className="w-full sm:w-auto"><Save className="mr-2"/>Save Schedule</Button>
+              </CardFooter>
             </Card>
           )}
 
         </div>
-        {suggestion && (
-          <DialogFooter>
-            <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-            <Button onClick={handleApply}>Apply Schedule</Button>
-          </DialogFooter>
-        )}
       </DialogContent>
     </Dialog>
   );
@@ -224,21 +240,26 @@ function ScheduleWorkoutDialog({
               <SelectValue placeholder="Select a workout plan" />
             </SelectTrigger>
             <SelectContent>
-              {plans.map((plan) => (
-                <SelectItem key={plan.id} value={plan.id}>
-                  {plan.name}
-                </SelectItem>
-              ))}
+              {plans.length > 0 ? (
+                plans.map((plan) => (
+                    <SelectItem key={plan.id} value={plan.id}>
+                    {plan.name}
+                    </SelectItem>
+                ))
+              ) : (
+                <div className="p-4 text-center text-sm text-muted-foreground">No workout plans created yet.</div>
+              )
+              }
             </SelectContent>
           </Select>
         </div>
-        <DialogFooter className="justify-between sm:justify-between">
+        <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-between w-full">
            {scheduledWorkout && <Button variant="destructive" onClick={handleRemove}><Trash2 className="mr-2"/> Remove</Button>}
-           <div className="flex gap-2">
+           <div className="flex gap-2 justify-end">
             <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button onClick={handleSave}>Save</Button>
+            <Button onClick={handleSave} disabled={plans.length === 0}>Save</Button>
            </div>
         </DialogFooter>
       </DialogContent>
@@ -251,6 +272,7 @@ export function ScheduleClient() {
     ScheduledWorkout[]
   >("scheduled-workouts", []);
   const [plans] = useLocalStorage<WorkoutPlan[]>("workout-plans", []);
+  const [savedSchedules, setSavedSchedules] = useLocalStorage<SavedSchedule[]>("saved-schedules", []);
   const { toast } = useToast();
 
   const handleSchedule = (planId: string, date: Date) => {
@@ -285,37 +307,52 @@ export function ScheduleClient() {
     const today = new Date();
     const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1))); // Monday
     
-    const newScheduledWorkouts: ScheduledWorkout[] = [];
+    let newScheduledWorkouts: ScheduledWorkout[] = [];
 
     schedule.forEach((day, index) => {
+      const date = addDays(startOfWeek, index);
+      const dateString = format(date, "yyyy-MM-dd");
+      
+      const existingWorkoutIndex = scheduledWorkouts.findIndex(w => w.date === dateString);
+
       if (day.planId) {
-        const date = addDays(startOfWeek, index);
-        const dateString = format(date, "yyyy-MM-dd");
-        newScheduledWorkouts.push({
-          id: crypto.randomUUID(),
-          planId: day.planId,
-          date: dateString
-        });
+        const newWorkout: ScheduledWorkout = {
+            id: crypto.randomUUID(),
+            planId: day.planId,
+            date: dateString
+        };
+        if(existingWorkoutIndex > -1) {
+            // we will just create a new one, but we should remove the old one first
+        } else {
+           newScheduledWorkouts.push(newWorkout);
+        }
       }
     });
-
-    // This simplistic approach will overwrite existing scheduled workouts for the week
+    
+    // This approach will overwrite existing scheduled workouts for the week
     const nextWeek = addDays(startOfWeek, 7);
     const otherWorkouts = scheduledWorkouts.filter(w => new Date(w.date) < startOfWeek || new Date(w.date) >= nextWeek);
 
     setScheduledWorkouts([...otherWorkouts, ...newScheduledWorkouts]);
+    toast({ title: "Schedule Applied!", description: "Your calendar has been updated for the current week." });
   };
 
+  const handleDeleteSavedSchedule = (id: string) => {
+    setSavedSchedules(savedSchedules.filter(s => s.id !== id));
+    toast({ title: "Saved Schedule Deleted", variant: "destructive" });
+  }
+
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex justify-end">
         <AiScheduleGenerator onApplySchedule={handleApplySchedule} />
       </div>
       <Card>
-        <CardContent className="p-2">
+        <CardContent className="p-1 sm:p-2">
           <Calendar
             classNames={{
-              day: "h-24 w-full text-base",
+              day: "h-20 w-full sm:h-24 text-base",
               day_selected: "bg-primary text-primary-foreground",
               cell: "w-1/7",
             }}
@@ -338,34 +375,79 @@ export function ScheduleClient() {
         </CardContent>
       </Card>
       
-       <div>
-        <h3 className="text-xl font-bold mb-2">Upcoming Workouts</h3>
-        <div className="space-y-2">
-          {scheduledWorkouts
-            .filter(w => new Date(w.date) >= new Date())
-            .sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-            .slice(0, 5)
-            .map(workout => {
-                const plan = plans.find(p => p.id === workout.planId);
-                return (
-                    <Card key={workout.id}>
-                        <CardContent className="p-4 flex justify-between items-center">
-                            <div>
-                                <p className="font-semibold">{plan?.name || "Workout"}</p>
-                                <p className="text-sm text-muted-foreground">{format(new Date(workout.date), "PPP")}</p>
-                            </div>
-                            <Button variant="secondary" size="sm">Start</Button>
-                        </CardContent>
-                    </Card>
-                )
-          })}
-          {scheduledWorkouts.filter(w => new Date(w.date) >= new Date()).length === 0 && (
-            <p className="text-muted-foreground">No upcoming workouts scheduled.</p>
-          )}
-        </div>
-      </div>
+       <div className="grid gap-6 md:grid-cols-2">
+         <div className="space-y-4">
+            <h3 className="text-xl font-bold">Upcoming Workouts</h3>
+            <div className="space-y-2">
+              {scheduledWorkouts
+                .filter(w => new Date(w.date) >= new Date(new Date().setHours(0,0,0,0)))
+                .sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                .slice(0, 5)
+                .map(workout => {
+                    const plan = plans.find(p => p.id === workout.planId);
+                    return (
+                        <Card key={workout.id}>
+                            <CardContent className="p-4 flex justify-between items-center">
+                                <div>
+                                    <p className="font-semibold">{plan?.name || "Workout"}</p>
+                                    <p className="text-sm text-muted-foreground">{format(new Date(workout.date), "PPP")}</p>
+                                </div>
+                                <Button variant="secondary" size="sm">Start</Button>
+                            </CardContent>
+                        </Card>
+                    )
+              })}
+              {scheduledWorkouts.filter(w => new Date(w.date) >= new Date(new Date().setHours(0,0,0,0))).length === 0 && (
+                <p className="text-muted-foreground text-sm">No upcoming workouts scheduled.</p>
+              )}
+            </div>
+         </div>
+          <div className="space-y-4">
+              <h3 className="text-xl font-bold">Saved Schedules</h3>
+                {savedSchedules.length > 0 ? (
+                    <Accordion type="single" collapsible className="w-full space-y-2">
+                        {savedSchedules.map(saved => (
+                            <Card key={saved.id}>
+                                <AccordionItem value={saved.id} className="border-0">
+                                    <AccordionTrigger className="p-4 hover:no-underline">
+                                        <div className="flex flex-col text-left">
+                                            <span className="font-bold">Weekly Schedule</span>
+                                            <span className="text-sm text-muted-foreground">Saved on {format(new Date(saved.savedAt), "PPP")}</span>
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-4 pb-4 space-y-4">
+                                        <p className="text-sm text-muted-foreground italic">{saved.explanation}</p>
+                                        <ul className="space-y-2">
+                                            {saved.schedule.map(day => {
+                                                const plan = plans.find(p => p.id === day.planId);
+                                                return (
+                                                <li key={day.dayOfWeek} className="flex justify-between items-center text-sm">
+                                                    <span className="font-medium">{day.dayOfWeek}</span>
+                                                    {plan ? <Badge>{plan.name}</Badge> : <Badge variant="secondary">Rest</Badge>}
+                                                </li>
+                                                )
+                                            })}
+                                        </ul>
+                                        <div className="flex justify-between items-center pt-2">
+                                            <Button size="sm" onClick={() => handleApplySchedule(saved.schedule)}>Apply to Week</Button>
+                                             <Button variant="destructive" size="icon" onClick={() => handleDeleteSavedSchedule(saved.id)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Card>
+                        ))}
+                    </Accordion>
+                ) : (
+                    <p className="text-muted-foreground text-sm">No AI schedules saved yet.</p>
+                )}
+          </div>
+       </div>
     </div>
   );
 }
+
+    
 
     
