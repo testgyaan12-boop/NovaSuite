@@ -608,7 +608,7 @@ function SavedExerciseCard({
                     ))}
                 </Accordion>
             </CardContent>
-            <CardFooter className="flex gap-2">
+            <CardFooter className="flex gap-2 flex-wrap">
                 <Button variant="outline" size="sm" onClick={handleShare}><Share2 className="mr-2"/> Share</Button>
                 <Button variant="outline" size="sm" onClick={handleCopy}><Copy className="mr-2"/> Copy</Button>
             </CardFooter>
@@ -666,9 +666,9 @@ export function PlansClient() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
             <h2 className="text-2xl font-bold">Your Workout Plans</h2>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
                 <PlanEditor onSave={handleSavePlan} />
                 <AiExerciseFinder onSaveSuggestion={handleSaveSuggestion} />
                 <Button variant="outline" size="icon" onClick={requestNotificationPermission}>
@@ -679,7 +679,7 @@ export function PlansClient() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {plans.length === 0 ? (
             <Card className="md:col-span-2 lg:col-span-3 flex items-center justify-center p-10">
-                <CardContent className="p-0">
+                <CardContent className="p-0 text-center">
                 <p className="text-muted-foreground">
                     No workout plans created yet.
                 </p>
@@ -690,11 +690,11 @@ export function PlansClient() {
                 <Card key={plan.id} className="flex flex-col">
                 <CardHeader>
                     <div className="flex justify-between items-start">
-                        <div>
+                        <div className="flex-1">
                             <CardTitle>{plan.name}</CardTitle>
                             <CardDescription>{plan.description}</CardDescription>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 ml-2">
                            <PlanEditor plan={plan} onSave={handleSavePlan} isIcon={true} />
                            <AiSuggestions plan={plan} onUpdatePlan={handleSavePlan} />
                             <Button
@@ -726,7 +726,7 @@ export function PlansClient() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
              {savedSuggestions.length === 0 ? (
                 <Card className="md:col-span-2 lg:col-span-3 flex items-center justify-center p-10">
-                    <CardContent className="p-0">
+                    <CardContent className="p-0 text-center">
                     <p className="text-muted-foreground">
                         No exercise ideas saved yet. Use the "Find New Exercises" tool!
                     </p>
@@ -746,7 +746,3 @@ export function PlansClient() {
     </div>
   );
 }
-
-    
-
-    
