@@ -26,6 +26,8 @@ import {
   Plus,
   Sparkles,
   Trash2,
+  Search,
+  Loader2,
 } from "lucide-react";
 import {
   Card,
@@ -39,6 +41,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { suggestWorkoutModifications } from "@/ai/flows/suggest-workout-modifications";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { suggestExercises, EXERCISE_CATEGORIES, type SuggestExercisesOutput } from "@/ai/flows/suggest-exercises";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function PlanEditor({
   onSave,
@@ -356,7 +362,7 @@ function AiSuggestions({
                   id="sex"
                   value={sex}
                   onChange={(e) => setSex(e.target.value as 'male' | 'female')}
-                  className="w-full p-2 rounded-md bg-input"
+                  className="w-full p-2 rounded-md bg-input border"
                 >
                   <option value="male">Male</option>
                   <option value="female">Female</option>
@@ -405,6 +411,91 @@ function AiSuggestions({
   );
 }
 
+function AiExerciseFinder() {
+    const { toast } = useToast();
+    const [open, setOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [category, setCategory] = useState<(typeof EXERCISE_CATEGORIES)[number]>('Chest');
+    const [suggestions, setSuggestions] = useState<SuggestExercisesOutput | null>(null);
+
+    const handleGetSuggestions = async () => {
+        setIsLoading(true);
+        setSuggestions(null);
+        try {
+            const result = await suggestExercises({ category });
+            setSuggestions(result);
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: "Error",
+                description: "Could not get AI exercise suggestions. Please try again.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline">
+                    <Search className="mr-2" /> Find New Exercises
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md md:max-w-2xl">
+                <DialogHeader>
+                    <DialogTitle>AI Exercise Finder</DialogTitle>
+                    <DialogDescription>Discover new exercises for any muscle group.</DialogDescription>
+                </DialogHeader>
+                <div className="py-4 space-y-4 max-h-[70vh] overflow-y-auto px-1">
+                    <div className="flex gap-2 items-center">
+                        <Select value={category} onValueChange={(v) => setCategory(v as any)}>
+                            <SelectTrigger><SelectValue/></SelectTrigger>
+                            <SelectContent>
+                                {EXERCISE_CATEGORIES.map(cat => (
+                                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Button onClick={handleGetSuggestions} disabled={isLoading}>
+                            {isLoading ? <Loader2 className="animate-spin" /> : <Sparkles />}
+                        </Button>
+                    </div>
+
+                    {isLoading && (
+                        <div className="space-y-4">
+                            <Skeleton className="h-24 w-full" />
+                            <Skeleton className="h-24 w-full" />
+                            <Skeleton className="h-24 w-full" />
+                        </div>
+                    )}
+
+                    {suggestions && (
+                        <Accordion type="single" collapsible className="w-full space-y-2">
+                            {suggestions.exercises.map((ex, index) => (
+                                <Card key={index}>
+                                    <AccordionItem value={`item-${index}`} className="border-0">
+                                        <AccordionTrigger className="p-4 hover:no-underline">
+                                             <div className="flex flex-col text-left">
+                                                <span className="font-bold">{ex.name}</span>
+                                                <span className="text-sm text-muted-foreground">{ex.equipment}</span>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="px-4 pb-4">
+                                            <p className="text-sm">{ex.description}</p>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Card>
+                            ))}
+                        </Accordion>
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
 export function PlansClient() {
   const [plans, setPlans] = useLocalStorage<WorkoutPlan[]>("workout-plans", []);
   const { toast } = useToast();
@@ -444,8 +535,9 @@ export function PlansClient() {
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <PlanEditor onSave={handleSavePlan} />
+        <AiExerciseFinder />
         <Button variant="outline" onClick={requestNotificationPermission}>Enable Reminders</Button>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
