@@ -2,16 +2,20 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
-import { TRAINER_ROUTINES } from "@/lib/placeholder-data";
+import { TRAINER_ROUTINES, ASSIGNED_TRAINER, NEARBY_TRAINERS } from "@/lib/placeholder-data";
 import type { WorkoutPlan } from "@/lib/types";
+import { Calendar, Mail, Star, UserPlus, Search } from "lucide-react";
+import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function TrainerClient() {
   const [code, setCode] = useState("");
   const [plans, setPlans] = useLocalStorage<WorkoutPlan[]>("workout-plans", []);
+  const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
   const handleAddPlan = (e: React.FormEvent) => {
@@ -43,22 +47,107 @@ export function TrainerClient() {
     }
   };
 
+  const filteredTrainers = NEARBY_TRAINERS.filter(trainer => 
+      trainer.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      trainer.specialty.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <Card className="max-w-lg">
-      <CardHeader>
-        <CardTitle>Add Trainer Plan</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleAddPlan} className="flex gap-2">
-          <Input
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="Enter plan code (e.g., APEX-START)"
-            className="flex-grow"
+    <div className="space-y-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Personal Trainer</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col md:flex-row items-center gap-6">
+            <Image 
+                src={ASSIGNED_TRAINER.avatar.src}
+                alt={ASSIGNED_TRAINER.avatar.alt}
+                width={150}
+                height={150}
+                className="rounded-full aspect-square object-cover"
+                data-ai-hint={ASSIGNED_TRAINER.avatar['data-ai-hint']}
+            />
+            <div className="space-y-4">
+                <div>
+                    <h3 className="text-2xl font-bold">{ASSIGNED_TRAINER.name}</h3>
+                    <p className="text-muted-foreground">{ASSIGNED_TRAINER.specialty}</p>
+                </div>
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        <Mail className="h-5 w-5 text-muted-foreground" />
+                        <a href={`mailto:${ASSIGNED_TRAINER.email}`} className="text-sm hover:underline">{ASSIGNED_TRAINER.email}</a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Calendar className="h-5 w-5 text-muted-foreground" />
+                        <p className="text-sm">Next session: {new Date(ASSIGNED_TRAINER.nextSession).toLocaleDateString()}</p>
+                    </div>
+                </div>
+                 <Button>Reschedule Session</Button>
+            </div>
+        </CardContent>
+      </Card>
+      
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">Find a New Trainer</h2>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input 
+            placeholder="Search by name or specialty..."
+            className="pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Button type="submit">Add Plan</Button>
-        </form>
-      </CardContent>
-    </Card>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filteredTrainers.map(trainer => (
+              <Card key={trainer.id}>
+                <CardContent className="flex flex-col items-center text-center p-6">
+                  <Avatar className="w-24 h-24 mb-4">
+                    <AvatarImage src={trainer.avatar.src} alt={trainer.avatar.alt} data-ai-hint={trainer.avatar['data-ai-hint']} />
+                    <AvatarFallback>{trainer.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <h3 className="text-xl font-bold">{trainer.name}</h3>
+                  <p className="text-muted-foreground">{trainer.specialty}</p>
+                  <div className="flex items-center gap-1 my-2">
+                      <Star className="w-4 h-4 text-yellow-400" />
+                      <span className="text-sm font-bold">{trainer.rating}</span>
+                      <span className="text-sm text-muted-foreground">({trainer.location})</span>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                    <Button className="w-full">
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Request a Session
+                    </Button>
+                </CardFooter>
+              </Card>
+          ))}
+        </div>
+         {filteredTrainers.length === 0 && (
+            <div className="text-center py-10 text-muted-foreground">
+                <p>No trainers found matching your search.</p>
+            </div>
+        )}
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Add Plan from Trainer</CardTitle>
+          <CardDescription>If your trainer gave you a plan code, enter it here.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleAddPlan} className="flex gap-2">
+            <Input
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Enter plan code (e.g., APEX-START)"
+              className="flex-grow"
+            />
+            <Button type="submit">Add Plan</Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

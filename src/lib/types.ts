@@ -70,3 +70,29 @@ export interface SavedDietPlan extends SuggestDietPlanOutput {
     id: string;
     savedAt: string; // ISO string
 }
+
+export interface PersonalTrainer {
+    name: string;
+    specialty: string;
+    email: string;
+    nextSession: string; // ISO string
+    fee: number;
+    avatar: {
+        src: string;
+        alt: string;
+        'data-ai-hint': string;
+    };
+}
+
+export interface Trainer {
+    id: string;
+    name: string;
+    specialty: string;
+    location: string;
+    rating: number;
+    avatar: {
+        src: string;
+        alt: string;
+        'data-ai-hint': string;
+    };
+}

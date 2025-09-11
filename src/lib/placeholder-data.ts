@@ -1,4 +1,4 @@
-import type { WorkoutPlan, MembershipDetails } from "./types";
+import type { WorkoutPlan, MembershipDetails, PersonalTrainer, Trainer } from "./types";
 
 export const TRAINER_ROUTINES: { [key: string]: WorkoutPlan } = {
   "APEX-START": {
@@ -185,3 +185,55 @@ export const DUMMY_MEMBERSHIP: MembershipDetails = {
     { date: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString(), amount: 45 },
   ]
 }
+
+export const ASSIGNED_TRAINER: PersonalTrainer = {
+    name: "Jane Smith",
+    specialty: "Strength & Conditioning",
+    email: "jane.smith@example.com",
+    nextSession: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString(),
+    fee: 80,
+    avatar: {
+        src: 'https://picsum.photos/seed/trainer-jane/400/400',
+        alt: 'Portrait of Jane Smith',
+        "data-ai-hint": "female trainer portrait"
+    }
+};
+
+export const NEARBY_TRAINERS: Trainer[] = [
+    {
+        id: 't1',
+        name: 'Mike Johnson',
+        specialty: 'Powerlifting',
+        location: 'Venice, CA',
+        rating: 4.8,
+        avatar: {
+            src: 'https://picsum.photos/seed/trainer-mike/400/400',
+            alt: 'Portrait of Mike Johnson',
+            "data-ai-hint": "male trainer portrait"
+        }
+    },
+    {
+        id: 't2',
+        name: 'Emily Williams',
+        specialty: 'Yoga & Flexibility',
+        location: 'Santa Monica, CA',
+        rating: 4.9,
+        avatar: {
+            src: 'https://picsum.photos/seed/trainer-emily/400/400',
+            alt: 'Portrait of Emily Williams',
+            "data-ai-hint": "female yoga instructor"
+        }
+    },
+    {
+        id: 't3',
+        name: 'Chris Lee',
+        specialty: 'CrossFit',
+        location: 'Venice, CA',
+        rating: 4.7,
+        avatar: {
+            src: 'https://picsum.photos/seed/trainer-chris/400/400',
+            alt: 'Portrait of Chris Lee',
+            "data-ai-hint": "male crossfit trainer"
+        }
+    }
+];

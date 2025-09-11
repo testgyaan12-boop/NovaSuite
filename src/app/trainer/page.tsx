@@ -5,8 +5,8 @@ export default function TrainerPage() {
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        title="Trainer Routines"
-        description="Add workout plans from your trainer using a plan code."
+        title="Personal Trainer"
+        description="Manage your assigned trainer and find new experts nearby."
       />
       <TrainerClient />
     </div>
