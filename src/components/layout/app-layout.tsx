@@ -23,7 +23,6 @@ import {
   Scan,
   Store,
   IdCard,
-  Watch,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -45,7 +44,6 @@ const navItems = [
   { href: "/trainer", label: "Trainer", icon: User },
   { href: "/gyms", label: "Gyms", icon: Store },
   { href: "/membership", label: "Membership", icon: IdCard },
-  { href: "/connect", label: "Connect", icon: Watch },
   { href: "/nutrition", label: "Nutrition", icon: Scan },
 ];
 
