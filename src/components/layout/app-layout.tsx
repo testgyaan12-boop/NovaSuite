@@ -34,6 +34,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import type { ReactNode } from "react";
+import { Toaster } from "../ui/toaster";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -112,7 +113,6 @@ function Header({children}: {children?: ReactNode}) {
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="flex">
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2">
@@ -130,11 +130,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <NavMenu />
           </SidebarContent>
         </Sidebar>
-        <SidebarInset>
-          <Header />
-          <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-        </SidebarInset>
-      </div>
+        <div className="flex flex-col flex-1">
+            <Header />
+            <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+        </div>
+      <Toaster />
     </SidebarProvider>
   );
 }

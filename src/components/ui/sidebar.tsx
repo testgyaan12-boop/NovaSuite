@@ -165,7 +165,7 @@ const SidebarProvider = React.forwardRef<
                   {children}
                 </SheetContent>
             </Sheet>
-            <div className="hidden md:block">{children}</div>
+            <div className="hidden md:flex md:flex-col">{children}</div>
           </div>
         </TooltipProvider>
       </SidebarContext.Provider>
@@ -192,7 +192,7 @@ const Sidebar = React.forwardRef<
       data-state={state}
       data-side={side}
       className={cn(
-        "hidden md:flex h-screen flex-col bg-sidebar text-sidebar-foreground border-r transition-[width] duration-300",
+        "h-screen bg-sidebar text-sidebar-foreground border-r transition-[width] duration-300",
         state === "expanded" ? "w-[--sidebar-width]" : "w-[--sidebar-width-icon]",
         className
       )}
