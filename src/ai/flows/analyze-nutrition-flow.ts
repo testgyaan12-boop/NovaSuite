@@ -49,6 +49,7 @@ export async function analyzeNutrition(
 
 const prompt = ai.definePrompt({
   name: 'analyzeNutritionPrompt',
+  model: 'googleai/gemini-pro',
   input: {
     schema: z.object({
       imageDataUri: z.string().optional(),

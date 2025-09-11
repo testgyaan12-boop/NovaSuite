@@ -1,4 +1,3 @@
-// src/ai/flows/suggest-workout-modifications.ts
 'use server';
 
 /**
@@ -48,6 +47,7 @@ export async function suggestWorkoutModifications(
 
 const prompt = ai.definePrompt({
   name: 'suggestWorkoutModificationsPrompt',
+  model: 'googleai/gemini-pro',
   input: {schema: SuggestWorkoutModificationsInputSchema},
   output: {schema: SuggestWorkoutModificationsOutputSchema},
   prompt: `You are a personal trainer who suggests modifications to workout plans based on user characteristics. 
