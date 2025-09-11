@@ -144,28 +144,27 @@ const SidebarProvider = React.forwardRef<
               } as React.CSSProperties
             }
             className={cn(
-              "group/sidebar-wrapper flex w-full flex-col md:flex-row",
+              "group/sidebar-wrapper",
               className
             )}
             ref={ref}
             {...props}
           >
-            <Sheet open={openMobile} onOpenChange={setOpenMobile}>
-              <SheetContent
-                data-sidebar="sidebar"
-                data-mobile="true"
-                className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground"
-                style={
-                  {
-                    "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-                  } as React.CSSProperties
-                }
-                side={side}
-              >
-                {children}
-              </SheetContent>
+             <Sheet open={openMobile} onOpenChange={setOpenMobile}>
+                <SheetContent
+                    data-sidebar="sidebar"
+                    data-mobile="true"
+                    className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground"
+                    style={
+                    {
+                        "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+                    } as React.CSSProperties
+                    }
+                    side={side}
+                >
+                    {children}
+                </SheetContent>
             </Sheet>
-
             {children}
           </div>
         </TooltipProvider>
