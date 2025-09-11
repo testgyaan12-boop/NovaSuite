@@ -133,6 +133,7 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
    const startTour = () => {
     const driverObj = driver({
       showProgress: true,
+      allowClose: false,
       steps: [
         { element: '#tour-start-button', popover: { title: 'Welcome to Apex Athletics!', description: 'Let\'s take a quick tour of the features.' } },
         { element: '#nav-dashboard', popover: { title: 'Dashboard', description: 'This is your main hub, showing a snapshot of your activity and goals.' } },
@@ -141,6 +142,7 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
         { element: '#nav-workouts', popover: { title: 'Workouts', description: 'Log your daily training sessions and view your history.' } },
         { element: '#nav-plans', popover: { title: 'Plans', description: 'Create, manage, and get AI suggestions for your personalized workout routines.' } },
         { element: '#nav-diet', popover: { title: 'Diet', description: 'Manage your nutritional goals and get AI-powered diet plans.' } },
+        { element: '#nav-nutrition', popover: { title: 'Nutrition Analyzer', description: 'Use your camera to get instant nutritional info for your meals.' } },
         { element: '#profile-button', popover: { title: 'Your Profile', description: 'Access your profile settings and log out from here.' } },
         { popover: { title: 'Tour Complete!', description: 'You\'re all set! Feel free to explore and start your fitness journey.' } }
       ]
