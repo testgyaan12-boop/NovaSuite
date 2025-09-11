@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 import type { DietPlan, UserProfile, SavedDietPlan } from "@/lib/types";
-import { Beef, Droplets, Flame, Sparkles, Loader2, Utensils, Save, Trash2 } from "lucide-react";
+import { Beef, Droplets, Flame, Sparkles, Loader2, Utensils, Save, Trash2, Leaf } from "lucide-react";
 import { useState } from "react";
 import { suggestDietPlan, type SuggestDietPlanOutput, type SuggestDietPlanInput } from "@/ai/flows/suggest-diet-plan";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -122,6 +122,7 @@ function AiDietPlanner() {
     weight: userProfile.weight || 80,
     activityLevel: 'moderately_active',
     goal: 'maintain_weight',
+    dietaryPreference: 'any',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,7 +139,7 @@ function AiDietPlanner() {
     setIsLoading(true);
     setSuggestion(null);
 
-    if (!formState.age || !formState.height || !formState.weight || !formState.sex || !formState.activityLevel || !formState.goal) {
+    if (!formState.age || !formState.height || !formState.weight || !formState.sex || !formState.activityLevel || !formState.goal || !formState.dietaryPreference) {
         toast({ title: "Missing Information", description: "Please fill out all profile fields.", variant: "destructive" });
         setIsLoading(false);
         return;
@@ -201,7 +202,7 @@ function AiDietPlanner() {
           <CardDescription>Get a personalized diet plan based on your profile and goals.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="age">Age</Label>
               <Input id="age" name="age" type="number" value={formState.age} onChange={handleInputChange} />
@@ -247,7 +248,19 @@ function AiDietPlanner() {
                  </SelectContent>
               </Select>
             </div>
-            <div className="md:col-span-2">
+            <div className="space-y-2">
+                <Label htmlFor="dietaryPreference" className="flex items-center gap-2"><Leaf />Dietary Preference</Label>
+                <Select name="dietaryPreference" value={formState.dietaryPreference} onValueChange={handleSelectChange('dietaryPreference')}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="any">Any</SelectItem>
+                        <SelectItem value="non-vegetarian">Non-Vegetarian</SelectItem>
+                        <SelectItem value="vegetarian">Vegetarian</SelectItem>
+                        <SelectItem value="vegan">Vegan</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="sm:col-span-2 lg:col-span-3">
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? <><Loader2 className="animate-spin mr-2" />Generating...</> : <><Sparkles className="mr-2" />Suggest Diet Plan</>}
               </Button>
@@ -316,7 +329,7 @@ function AiDietPlanner() {
                 </Accordion>
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
                 <Button onClick={handleAcceptSuggestion}>Accept Daily Totals</Button>
                 <Button variant="secondary" onClick={handleSaveSuggestion}><Save className="mr-2" /> Save Full Plan</Button>
             </div>
@@ -385,9 +398,13 @@ function AiDietPlanner() {
 
 export function DietClient() {
   return (
-    <div className="grid gap-8 lg:grid-cols-2">
-      <AiDietPlanner />
-      <ManualDietCard />
+    <div className="grid gap-8 lg:grid-cols-3 xl:grid-cols-2">
+      <div className="lg:col-span-2 xl:col-span-1">
+        <AiDietPlanner />
+      </div>
+      <div className="lg:col-span-1">
+        <ManualDietCard />
+      </div>
     </div>
   );
 }

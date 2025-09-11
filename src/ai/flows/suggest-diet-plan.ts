@@ -23,6 +23,7 @@ const SuggestDietPlanInputSchema = z.object({
   goal: z
     .enum(['lose_weight', 'maintain_weight', 'gain_muscle'])
     .describe('The fitness goal of the user.'),
+  dietaryPreference: z.enum(['any', 'vegetarian', 'vegan', 'non-vegetarian']).describe('The dietary preference of the user.'),
 });
 export type SuggestDietPlanInput = z.infer<typeof SuggestDietPlanInputSchema>;
 
@@ -69,6 +70,8 @@ const prompt = ai.definePrompt({
   
   Second, create a sample one-day meal plan with specific food suggestions for breakfast, lunch, dinner, and one or two snacks. For each meal, provide an estimated breakdown of its calories, protein, carbohydrates, and fat.
 
+  The meal plan must adhere to the user's dietary preference.
+  
   Do not include any preamble or conversational filler. Structure the entire response according to the output schema.
 
   User Profile:
@@ -78,6 +81,7 @@ const prompt = ai.definePrompt({
   - Sex: {{{sex}}}
   - Activity Level: {{{activityLevel}}}
   - Goal: {{{goal}}}
+  - Dietary Preference: {{{dietaryPreference}}}
   `,
 });
 
