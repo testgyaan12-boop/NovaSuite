@@ -165,7 +165,7 @@ const SidebarProvider = React.forwardRef<
                   {children}
                 </SheetContent>
             </Sheet>
-            <div className="hidden md:flex md:flex-col">{children}</div>
+            <div className="hidden md:block">{children}</div>
           </div>
         </TooltipProvider>
       </SidebarContext.Provider>
@@ -180,11 +180,7 @@ const Sidebar = React.forwardRef<
     side?: "left" | "right"
   }
 >(({ side = "left", className, children, ...props }, ref) => {
-  const { isMobile, state } = useSidebar()
-
-  if (isMobile) {
-    return null
-  }
+  const { state } = useSidebar()
 
   return (
     <div
@@ -192,7 +188,7 @@ const Sidebar = React.forwardRef<
       data-state={state}
       data-side={side}
       className={cn(
-        "h-screen bg-sidebar text-sidebar-foreground border-r transition-[width] duration-300",
+        "h-screen bg-sidebar text-sidebar-foreground border-r transition-[width] duration-300 flex-col",
         state === "expanded" ? "w-[--sidebar-width]" : "w-[--sidebar-width-icon]",
         className
       )}
@@ -208,19 +204,15 @@ const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar, isMobile } = useSidebar()
+  const { toggleSidebar } = useSidebar()
 
-  if (!isMobile) {
-    return null;
-  }
-  
   return (
     <Button
       ref={ref}
       data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn("h-7 w-7", className)}
+      className={cn("h-8 w-8 md:hidden", className)}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
