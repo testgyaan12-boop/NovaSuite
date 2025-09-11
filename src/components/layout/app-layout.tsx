@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -147,7 +146,6 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
       </div>
     )
 }
-
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
