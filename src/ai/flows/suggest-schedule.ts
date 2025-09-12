@@ -43,6 +43,7 @@ export async function suggestSchedule(input: SuggestScheduleInput): Promise<Sugg
 
 const prompt = ai.definePrompt({
     name: 'suggestSchedulePrompt',
+    model: 'googleai/gemini-1.5-flash-preview',
     input: {schema: SuggestScheduleInputSchema},
     output: {schema: SuggestScheduleOutputSchema},
     prompt: `You are a world-class personal trainer creating a weekly workout schedule.
