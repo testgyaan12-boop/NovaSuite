@@ -259,11 +259,13 @@ function AiWorkoutSuggestions() {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="Chest" className="w-full" onValueChange={(v) => getSuggestions(v as any)}>
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 h-auto">
-            {EXERCISE_CATEGORIES.map(cat => (
-              <TabsTrigger key={cat} value={cat}>{cat}</TabsTrigger>
-            ))}
-          </TabsList>
+          <ScrollArea className="w-full whitespace-nowrap">
+            <TabsList className="inline-flex h-auto">
+              {EXERCISE_CATEGORIES.map(cat => (
+                <TabsTrigger key={cat} value={cat}>{cat}</TabsTrigger>
+              ))}
+            </TabsList>
+          </ScrollArea>
            {EXERCISE_CATEGORIES.map(cat => (
             <TabsContent key={cat} value={cat}>
               {isLoading[cat] && (
@@ -326,29 +328,29 @@ export function WorkoutsClient() {
             </CardContent>
           </Card>
         ) : (
-          <Accordion type="single" collapsible className="w-full space-y-2">
+           <Accordion type="single" collapsible className="w-full space-y-2">
             {workouts.map((log) => (
-              <AccordionItem value={log.id} key={log.id} className="border-b-0">
-                <Card>
-                    <AccordionTrigger className="p-4 hover:no-underline">
-                        <div className="flex flex-col text-left">
-                        <span className="font-bold text-lg">{log.name}</span>
-                        <span className="text-sm text-muted-foreground">{new Date(log.date).toLocaleString()}</span>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="p-4 pt-0">
-                        {log.notes && <p className="mb-4 text-sm text-muted-foreground italic">"{log.notes}"</p>}
-                        {log.exercises.map((ex) => (
-                        <div key={ex.id} className="mb-4">
-                            <h4 className="font-semibold mb-2">{ex.name}</h4>
-                            <ul className="space-y-1 text-sm list-disc list-inside">
-                            {ex.sets.map((s, i) => <li key={s.id}>{`Set ${i+1}: ${s.reps} reps @ ${s.weight} kg`}</li>)}
-                            </ul>
-                        </div>
-                        ))}
-                    </AccordionContent>
-                </Card>
-              </AccordionItem>
+                <AccordionItem value={log.id} key={log.id} className="border-b-0">
+                    <Card>
+                        <AccordionTrigger className="p-4 hover:no-underline">
+                            <div className="flex flex-col text-left">
+                            <span className="font-bold text-lg">{log.name}</span>
+                            <span className="text-sm text-muted-foreground">{new Date(log.date).toLocaleString()}</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="p-4 pt-0">
+                            {log.notes && <p className="mb-4 text-sm text-muted-foreground italic">"{log.notes}"</p>}
+                            {log.exercises.map((ex) => (
+                            <div key={ex.id} className="mb-4">
+                                <h4 className="font-semibold mb-2">{ex.name}</h4>
+                                <ul className="space-y-1 text-sm list-disc list-inside">
+                                {ex.sets.map((s, i) => <li key={s.id}>{`Set ${i+1}: ${s.reps} reps @ ${s.weight} kg`}</li>)}
+                                </ul>
+                            </div>
+                            ))}
+                        </AccordionContent>
+                    </Card>
+                </AccordionItem>
             ))}
           </Accordion>
         )}
@@ -356,3 +358,5 @@ export function WorkoutsClient() {
     </div>
   );
 }
+
+    
