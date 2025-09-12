@@ -245,6 +245,7 @@ function AiWorkoutSuggestions() {
   };
   
   useEffect(() => {
+    // Load initial tab content
     getSuggestions('Chest');
   }, []);
 
@@ -272,9 +273,9 @@ function AiWorkoutSuggestions() {
               ))}
             </TabsList>
           </ScrollArea>
-           {EXERCISE_CATEGORIES.map(cat => (
-            <TabsContent key={cat} value={cat} className="mt-4">
-              {isLoading[cat] && (
+           
+           <TabsContent value={activeTab} className="mt-4">
+              {isLoading[activeTab] && (
                 <div className="space-y-4">
                   {[...Array(3)].map((_, i) => (
                     <div key={i} className="p-4 border rounded-md space-y-2">
@@ -284,10 +285,10 @@ function AiWorkoutSuggestions() {
                   ))}
                 </div>
               )}
-              {suggestions[cat] && (
+              {suggestions[activeTab] && (
                 <Accordion type="single" collapsible className="w-full space-y-2">
-                  {suggestions[cat]?.exercises.map((ex, index) => (
-                    <AccordionItem value={`item-${cat}-${index}`} key={`item-${cat}-${index}`} className="border rounded-md px-4">
+                  {suggestions[activeTab]?.exercises.map((ex, index) => (
+                    <AccordionItem value={`item-${activeTab}-${index}`} key={`item-${activeTab}-${index}`} className="border rounded-md px-4">
                         <AccordionTrigger className="py-4 hover:no-underline">
                           <div className="flex flex-col text-left">
                             <span className="font-bold">{ex.name}</span>
@@ -306,7 +307,6 @@ function AiWorkoutSuggestions() {
                 </Accordion>
               )}
             </TabsContent>
-          ))}
         </Tabs>
       </CardContent>
     </Card>
