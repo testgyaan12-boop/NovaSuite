@@ -36,7 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { suggestExercises, type SuggestExercisesOutput } from "@/ai/flows/suggest-exercises";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const EXERCISE_CATEGORIES = [
@@ -220,7 +220,7 @@ function WorkoutLogger({ onSave }: { onSave: (log: WorkoutLog) => void }) {
 }
 
 function AiWorkoutSuggestions() {
-  const [activeTab, setActiveTab] = useState<(typeof EXERCISE_CATEGORIES)[number]>('Chest');
+  const [activeTab, setActiveTab] = useState<(typeof EXERCISE_CATEGORIES)[number]>(EXERCISE_CATEGORIES[0]);
   const [suggestions, setSuggestions] = useState<Partial<Record<(typeof EXERCISE_CATEGORIES)[number], SuggestExercisesOutput>>>({});
   const [isLoading, setIsLoading] = useState<Partial<Record<(typeof EXERCISE_CATEGORIES)[number], boolean>>>({});
   const { toast } = useToast();
@@ -243,14 +243,13 @@ function AiWorkoutSuggestions() {
       setIsLoading(prev => ({ ...prev, [category]: false }));
     }
   };
-  
+
   useEffect(() => {
-    // Load initial tab content
-    getSuggestions('Chest');
-  }, []);
+    getSuggestions(activeTab);
+  }, [activeTab]);
 
   return (
-     <Card>
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Sparkles />
@@ -261,52 +260,54 @@ function AiWorkoutSuggestions() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="Chest" className="w-full" onValueChange={(v) => {
-            const category = v as typeof EXERCISE_CATEGORIES[number];
-            setActiveTab(category);
-            getSuggestions(category);
-        }}>
-          <ScrollArea className="max-w-full">
-            <TabsList className="inline-flex h-auto w-full sm:w-auto">
+        <Tabs 
+          value={activeTab} 
+          onValueChange={(value) => setActiveTab(value as (typeof EXERCISE_CATEGORIES)[number])}
+          className="w-full"
+        >
+          <ScrollArea className="w-full whitespace-nowrap">
+            <TabsList className="inline-flex h-auto w-max">
               {EXERCISE_CATEGORIES.map(cat => (
                 <TabsTrigger key={cat} value={cat}>{cat}</TabsTrigger>
               ))}
             </TabsList>
           </ScrollArea>
-           
-           <TabsContent value={activeTab} className="mt-4">
-              {isLoading[activeTab] && (
-                <div className="space-y-4">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="p-4 border rounded-md space-y-2">
-                      <Skeleton className="h-5 w-1/2" />
-                      <Skeleton className="h-4 w-1/3" />
-                    </div>
-                  ))}
-                </div>
-              )}
-              {suggestions[activeTab] && (
-                <Accordion type="single" collapsible className="w-full space-y-2">
-                  {suggestions[activeTab]?.exercises.map((ex, index) => (
-                    <AccordionItem value={`item-${activeTab}-${index}`} key={`item-${activeTab}-${index}`} className="border rounded-md px-4">
-                        <AccordionTrigger className="py-4 hover:no-underline">
-                          <div className="flex flex-col text-left">
-                            <span className="font-bold">{ex.name}</span>
-                            <span className="text-sm text-muted-foreground">{ex.equipment}</span>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pb-4 space-y-2">
-                          <p className="text-sm">{ex.description}</p>
-                          <div className="text-sm font-medium p-2 bg-muted rounded-md">
-                            {ex.sets} sets of {ex.reps} reps
-                             {ex.weight && ex.weight.toLowerCase() !== 'bodyweight' && ` at ~${ex.weight} kg`}
-                          </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              )}
-            </TabsContent>
+          
+          <div className="mt-4">
+            {isLoading[activeTab] && (
+              <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="p-4 border rounded-md space-y-2">
+                    <Skeleton className="h-5 w-1/2" />
+                    <Skeleton className="h-4 w-1/3" />
+                  </div>
+                ))}
+              </div>
+            )}
+            {!isLoading[activeTab] && suggestions[activeTab] && (
+              <Accordion type="single" collapsible className="w-full space-y-2">
+                {suggestions[activeTab]?.exercises.map((ex, index) => (
+                  <AccordionItem value={`item-${activeTab}-${index}`} key={`item-${activeTab}-${index}`} className="border-b-0">
+                    <Card className="bg-card">
+                      <AccordionTrigger className="p-4 hover:no-underline rounded-lg">
+                        <div className="flex flex-col text-left">
+                          <span className="font-bold">{ex.name}</span>
+                          <span className="text-sm text-muted-foreground">{ex.equipment}</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4 space-y-2">
+                        <p className="text-sm">{ex.description}</p>
+                        <div className="text-sm font-medium p-2 bg-muted rounded-md">
+                          {ex.sets} sets of {ex.reps} reps
+                          {ex.weight && ex.weight.toLowerCase() !== 'bodyweight' && ` at ~${ex.weight} kg`}
+                        </div>
+                      </AccordionContent>
+                    </Card>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            )}
+          </div>
         </Tabs>
       </CardContent>
     </Card>
