@@ -47,7 +47,7 @@ export async function suggestWorkoutModifications(
 
 const prompt = ai.definePrompt({
   name: 'suggestWorkoutModificationsPrompt',
-  model: 'googleai/gemini-1.5-flash-preview',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: SuggestWorkoutModificationsInputSchema},
   output: {schema: SuggestWorkoutModificationsOutputSchema},
   prompt: `You are a personal trainer who suggests modifications to workout plans based on user characteristics. 

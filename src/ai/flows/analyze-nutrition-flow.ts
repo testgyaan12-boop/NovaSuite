@@ -49,7 +49,7 @@ export async function analyzeNutrition(
 
 const prompt = ai.definePrompt({
   name: 'analyzeNutritionPrompt',
-  model: 'googleai/gemini-1.5-flash-preview',
+  model: 'googleai/gemini-1.5-flash',
   input: {
     schema: z.object({
       imageDataUri: z.string().optional(),

@@ -46,7 +46,7 @@ export async function suggestExercises(input: SuggestExercisesInput): Promise<Su
 
 const prompt = ai.definePrompt({
     name: 'suggestExercisesPrompt',
-    model: 'googleai/gemini-1.5-flash-preview',
+    model: 'googleai/gemini-1.5-flash',
     input: {schema: SuggestExercisesInputSchema},
     output: {schema: SuggestExercisesOutputSchema},
     prompt: `You are an expert personal trainer.
