@@ -37,6 +37,7 @@ import { suggestExercises, type SuggestExercisesOutput } from "@/ai/flows/sugges
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const EXERCISE_CATEGORIES = [
   'Chest',
@@ -259,39 +260,42 @@ function AiWorkoutSuggestions() {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="Chest" className="w-full" onValueChange={(v) => getSuggestions(v as any)}>
-          <ScrollArea className="w-full whitespace-nowrap">
-            <TabsList className="inline-flex h-auto">
+          <ScrollArea className="max-w-full">
+            <TabsList className="inline-flex h-auto w-full sm:w-auto">
               {EXERCISE_CATEGORIES.map(cat => (
                 <TabsTrigger key={cat} value={cat}>{cat}</TabsTrigger>
               ))}
             </TabsList>
           </ScrollArea>
            {EXERCISE_CATEGORIES.map(cat => (
-            <TabsContent key={cat} value={cat}>
+            <TabsContent key={cat} value={cat} className="mt-4">
               {isLoading[cat] && (
-                <div className="space-y-2 mt-4">
-                  {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="p-4 border rounded-md space-y-2">
+                      <Skeleton className="h-5 w-1/2" />
+                      <Skeleton className="h-4 w-1/3" />
+                    </div>
+                  ))}
                 </div>
               )}
               {suggestions[cat] && (
-                <Accordion type="single" collapsible className="w-full space-y-2 mt-4">
+                <Accordion type="single" collapsible className="w-full space-y-2">
                   {suggestions[cat]?.exercises.map((ex, index) => (
-                    <AccordionItem value={`item-${index}`} key={index} className="border-b-0">
-                      <Card>
-                        <AccordionTrigger className="p-4 hover:no-underline">
+                    <AccordionItem value={`item-${index}`} key={index} className="border rounded-md px-4">
+                        <AccordionTrigger className="py-4 hover:no-underline">
                           <div className="flex flex-col text-left">
                             <span className="font-bold">{ex.name}</span>
                             <span className="text-sm text-muted-foreground">{ex.equipment}</span>
                           </div>
                         </AccordionTrigger>
-                        <AccordionContent className="px-4 pb-4 space-y-2">
+                        <AccordionContent className="pb-4 space-y-2">
                           <p className="text-sm">{ex.description}</p>
                           <div className="text-sm font-medium p-2 bg-muted rounded-md">
                             {ex.sets} sets of {ex.reps} reps
                              {ex.weight && ex.weight.toLowerCase() !== 'bodyweight' && ` at ~${ex.weight} kg`}
                           </div>
                         </AccordionContent>
-                      </Card>
                     </AccordionItem>
                   ))}
                 </Accordion>
@@ -328,9 +332,9 @@ export function WorkoutsClient() {
             </CardContent>
           </Card>
         ) : (
-           <Accordion type="single" collapsible className="w-full space-y-2">
+           <Accordion type="single" collapsible className="w-full space-y-4">
             {workouts.map((log) => (
-                <AccordionItem value={log.id} key={log.id} className="border-b-0">
+                <AccordionItem value={log.id} key={log.id} className="border-b-0 rounded-lg border bg-card text-card-foreground shadow-sm">
                     <Card>
                         <AccordionTrigger className="p-4 hover:no-underline">
                             <div className="flex flex-col text-left">
@@ -338,18 +342,18 @@ export function WorkoutsClient() {
                             <span className="text-sm text-muted-foreground">{new Date(log.date).toLocaleString()}</span>
                             </div>
                         </AccordionTrigger>
-                        <AccordionContent className="p-4 pt-0">
-                            {log.notes && <p className="mb-4 text-sm text-muted-foreground italic">"{log.notes}"</p>}
-                            {log.exercises.map((ex) => (
-                            <div key={ex.id} className="mb-4">
-                                <h4 className="font-semibold mb-2">{ex.name}</h4>
-                                <ul className="space-y-1 text-sm list-disc list-inside">
-                                {ex.sets.map((s, i) => <li key={s.id}>{`Set ${i+1}: ${s.reps} reps @ ${s.weight} kg`}</li>)}
-                                </ul>
-                            </div>
-                            ))}
-                        </AccordionContent>
                     </Card>
+                    <AccordionContent className="p-4 pt-0">
+                        {log.notes && <p className="mb-4 text-sm text-muted-foreground italic">"{log.notes}"</p>}
+                        {log.exercises.map((ex) => (
+                        <div key={ex.id} className="mb-4">
+                            <h4 className="font-semibold mb-2">{ex.name}</h4>
+                            <ul className="space-y-1 text-sm list-disc list-inside">
+                            {ex.sets.map((s, i) => <li key={s.id}>{`Set ${i+1}: ${s.reps} reps @ ${s.weight} kg`}</li>)}
+                            </ul>
+                        </div>
+                        ))}
+                    </AccordionContent>
                 </AccordionItem>
             ))}
           </Accordion>
@@ -358,7 +362,5 @@ export function WorkoutsClient() {
     </div>
   );
 }
-
-    
 
     
