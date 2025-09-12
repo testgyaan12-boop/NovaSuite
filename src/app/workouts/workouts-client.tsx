@@ -220,6 +220,7 @@ function WorkoutLogger({ onSave }: { onSave: (log: WorkoutLog) => void }) {
 }
 
 function AiWorkoutSuggestions() {
+  const [activeTab, setActiveTab] = useState<(typeof EXERCISE_CATEGORIES)[number]>('Chest');
   const [suggestions, setSuggestions] = useState<Partial<Record<(typeof EXERCISE_CATEGORIES)[number], SuggestExercisesOutput>>>({});
   const [isLoading, setIsLoading] = useState<Partial<Record<(typeof EXERCISE_CATEGORIES)[number], boolean>>>({});
   const { toast } = useToast();
@@ -259,7 +260,11 @@ function AiWorkoutSuggestions() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="Chest" className="w-full" onValueChange={(v) => getSuggestions(v as any)}>
+        <Tabs defaultValue="Chest" className="w-full" onValueChange={(v) => {
+            const category = v as typeof EXERCISE_CATEGORIES[number];
+            setActiveTab(category);
+            getSuggestions(category);
+        }}>
           <ScrollArea className="max-w-full">
             <TabsList className="inline-flex h-auto w-full sm:w-auto">
               {EXERCISE_CATEGORIES.map(cat => (
@@ -282,7 +287,7 @@ function AiWorkoutSuggestions() {
               {suggestions[cat] && (
                 <Accordion type="single" collapsible className="w-full space-y-2">
                   {suggestions[cat]?.exercises.map((ex, index) => (
-                    <AccordionItem value={`item-${index}`} key={index} className="border rounded-md px-4">
+                    <AccordionItem value={`item-${cat}-${index}`} key={`item-${cat}-${index}`} className="border rounded-md px-4">
                         <AccordionTrigger className="py-4 hover:no-underline">
                           <div className="flex flex-col text-left">
                             <span className="font-bold">{ex.name}</span>
@@ -335,14 +340,12 @@ export function WorkoutsClient() {
            <Accordion type="single" collapsible className="w-full space-y-4">
             {workouts.map((log) => (
                 <AccordionItem value={log.id} key={log.id} className="border-b-0 rounded-lg border bg-card text-card-foreground shadow-sm">
-                    <Card>
-                        <AccordionTrigger className="p-4 hover:no-underline">
-                            <div className="flex flex-col text-left">
-                            <span className="font-bold text-lg">{log.name}</span>
-                            <span className="text-sm text-muted-foreground">{new Date(log.date).toLocaleString()}</span>
-                            </div>
-                        </AccordionTrigger>
-                    </Card>
+                    <AccordionTrigger className="p-4 hover:no-underline rounded-lg">
+                        <div className="flex flex-col text-left">
+                        <span className="font-bold text-lg">{log.name}</span>
+                        <span className="text-sm text-muted-foreground">{new Date(log.date).toLocaleString()}</span>
+                        </div>
+                    </AccordionTrigger>
                     <AccordionContent className="p-4 pt-0">
                         {log.notes && <p className="mb-4 text-sm text-muted-foreground italic">"{log.notes}"</p>}
                         {log.exercises.map((ex) => (
@@ -362,5 +365,3 @@ export function WorkoutsClient() {
     </div>
   );
 }
-
-    
