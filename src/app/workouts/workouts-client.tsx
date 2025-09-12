@@ -15,8 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
-import type { WorkoutLog, Exercise, ExerciseSet } from "@/lib/types";
-import { Plus, Trash2 } from "lucide-react";
+import type { WorkoutLog, Exercise, ExerciseSet, SavedExerciseSuggestion } from "@/lib/types";
+import { Plus, Trash2, Loader2, Sparkles } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -32,8 +32,24 @@ import {
 } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { suggestExercises, type SuggestExercisesOutput } from "@/ai/flows/suggest-exercises";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const EXERCISE_CATEGORIES = [
+  'Chest',
+  'Back',
+  'Shoulders',
+  'Biceps',
+  'Triceps',
+  'Legs',
+  'Abs',
+  'Cardio',
+] as const;
 
 function WorkoutLogger({ onSave }: { onSave: (log: WorkoutLog) => void }) {
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -111,10 +127,11 @@ function WorkoutLogger({ onSave }: { onSave: (log: WorkoutLog) => void }) {
     setName("");
     setNotes("");
     setExercises([]);
+    setOpen(false);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" /> Log New Workout
@@ -191,12 +208,93 @@ function WorkoutLogger({ onSave }: { onSave: (log: WorkoutLog) => void }) {
         </ScrollArea>
         <DialogFooter>
           <DialogClose asChild>
-            <Button onClick={handleSave}>Save Workout</Button>
+            <Button variant="outline">Cancel</Button>
           </DialogClose>
+          <Button onClick={handleSave}>Save Workout</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
+}
+
+function AiWorkoutSuggestions() {
+  const [suggestions, setSuggestions] = useState<Partial<Record<(typeof EXERCISE_CATEGORIES)[number], SuggestExercisesOutput>>>({});
+  const [isLoading, setIsLoading] = useState<Partial<Record<(typeof EXERCISE_CATEGORIES)[number], boolean>>>({});
+  const { toast } = useToast();
+
+  const getSuggestions = async (category: (typeof EXERCISE_CATEGORIES)[number]) => {
+    if (suggestions[category]) return;
+
+    setIsLoading(prev => ({ ...prev, [category]: true }));
+    try {
+      const result = await suggestExercises({ category });
+      setSuggestions(prev => ({ ...prev, [category]: result }));
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Suggestion Failed",
+        description: `Could not get suggestions for ${category}.`,
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(prev => ({ ...prev, [category]: false }));
+    }
+  };
+
+  return (
+     <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Sparkles />
+          AI Workout Suggestions
+        </CardTitle>
+        <CardDescription>
+          Get AI-powered exercise ideas for your next workout.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="Chest" className="w-full" onValueChange={(v) => getSuggestions(v as any)}>
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 h-auto">
+            {EXERCISE_CATEGORIES.map(cat => (
+              <TabsTrigger key={cat} value={cat} onClick={() => getSuggestions(cat)}>{cat}</TabsTrigger>
+            ))}
+          </TabsList>
+           {EXERCISE_CATEGORIES.map(cat => (
+            <TabsContent key={cat} value={cat}>
+              {isLoading[cat] && (
+                <div className="space-y-2 mt-4">
+                  {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
+                </div>
+              )}
+              {suggestions[cat] && (
+                <Accordion type="single" collapsible className="w-full space-y-2 mt-4">
+                  {suggestions[cat]?.exercises.map((ex, index) => (
+                    <Card key={index}>
+                      <AccordionItem value={`item-${index}`} className="border-0">
+                        <AccordionTrigger className="p-4 hover:no-underline">
+                          <div className="flex flex-col text-left">
+                            <span className="font-bold">{ex.name}</span>
+                            <span className="text-sm text-muted-foreground">{ex.equipment}</span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-4 pb-4 space-y-2">
+                          <p className="text-sm">{ex.description}</p>
+                          <div className="text-sm font-medium p-2 bg-muted rounded-md">
+                            {ex.sets} sets of {ex.reps} reps
+                             {ex.weight.toLowerCase() !== 'bodyweight' && ` at ~${ex.weight}`}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Card>
+                  ))}
+                </Accordion>
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </CardContent>
+    </Card>
+  )
 }
 
 export function WorkoutsClient() {
@@ -208,7 +306,11 @@ export function WorkoutsClient() {
 
   return (
     <div className="space-y-6">
-      <WorkoutLogger onSave={handleSaveWorkout} />
+      <div className="flex justify-start">
+        <WorkoutLogger onSave={handleSaveWorkout} />
+      </div>
+      
+      <AiWorkoutSuggestions />
 
       <div className="space-y-4">
         <h3 className="text-2xl font-bold font-headline">Workout History</h3>
@@ -221,7 +323,7 @@ export function WorkoutsClient() {
         ) : (
           <Accordion type="single" collapsible className="w-full space-y-2">
             {workouts.map((log) => (
-               <Card key={log.id}>
+              <Card key={log.id}>
                 <AccordionItem value={log.id} className="border-b-0">
                     <AccordionTrigger className="p-4 hover:no-underline">
                         <div className="flex flex-col text-left">

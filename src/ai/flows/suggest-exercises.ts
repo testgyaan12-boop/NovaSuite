@@ -30,7 +30,10 @@ export type SuggestExercisesInput = z.infer<typeof SuggestExercisesInputSchema>;
 const ExerciseSuggestionSchema = z.object({
     name: z.string().describe('The name of the suggested exercise.'),
     description: z.string().describe('A brief description of how to perform the exercise and its benefits.'),
-    equipment: z.string().describe('The equipment needed for the exercise (e.g., Dumbbells, Barbell, None).')
+    equipment: z.string().describe('The equipment needed for the exercise (e.g., Dumbbells, Barbell, None).'),
+    sets: z.number().describe('The suggested number of sets.'),
+    reps: z.string().describe('The suggested rep range (e.g., "8-12").'),
+    weight: z.string().describe('The suggested starting weight in kg or "bodyweight".')
 });
 
 const SuggestExercisesOutputSchema = z.object({
@@ -57,6 +60,9 @@ const prompt = ai.definePrompt({
     1. A clear name.
     2. A brief but effective description of how to perform it.
     3. The equipment required.
+    4. A suggested number of sets.
+    5. A suggested repetition range (e.g., "8-12").
+    6. A suggested starting weight in kg, or "bodyweight" if applicable.
 
     Do not include any preamble or conversational filler.
 
