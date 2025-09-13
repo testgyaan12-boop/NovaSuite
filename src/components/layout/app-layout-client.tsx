@@ -327,7 +327,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col flex-1">
           <PageLoader />
           <Header />
-          <main className="flex-1 p-4 md:p-6 lg:p-8 pb-20 md:pb-8" id="main-content">{children}</main>
+          <main className="flex-1 p-4 md:p-6 lg:p-8 pb-20 md:pb-6" id="main-content">{children}</main>
         </div>
       </div>
       <BottomNavBar />
