@@ -36,7 +36,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { suggestExercises, type SuggestExercisesOutput } from "@/ai/flows/suggest-exercises";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 const EXERCISE_CATEGORIES = [
@@ -224,6 +225,7 @@ function AiWorkoutSuggestions() {
   const [suggestions, setSuggestions] = useState<Partial<Record<(typeof EXERCISE_CATEGORIES)[number], SuggestExercisesOutput>>>({});
   const [isLoading, setIsLoading] = useState<Partial<Record<(typeof EXERCISE_CATEGORIES)[number], boolean>>>({});
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const getSuggestions = async (category: (typeof EXERCISE_CATEGORIES)[number]) => {
     if (suggestions[category] || isLoading[category]) return;
@@ -248,69 +250,80 @@ function AiWorkoutSuggestions() {
     getSuggestions(activeTab);
   }, [activeTab]);
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles />
-          AI Workout Suggestions
-        </CardTitle>
-        <CardDescription>
-          Get AI-powered exercise ideas for your next workout.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs 
-          value={activeTab} 
-          onValueChange={(value) => setActiveTab(value as (typeof EXERCISE_CATEGORIES)[number])}
-          className="w-full"
-        >
-          <ScrollArea className="w-full whitespace-nowrap">
-            <TabsList className="inline-flex h-auto w-max">
-              {EXERCISE_CATEGORIES.map(cat => (
-                <TabsTrigger key={cat} value={cat}>{cat}</TabsTrigger>
-              ))}
-            </TabsList>
-          </ScrollArea>
-          
-          <div className="mt-4">
-            {isLoading[activeTab] && (
-              <div className="space-y-4">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="p-4 border rounded-md space-y-2">
-                    <Skeleton className="h-5 w-1/2" />
-                    <Skeleton className="h-4 w-1/3" />
-                  </div>
-                ))}
-              </div>
-            )}
-            {!isLoading[activeTab] && suggestions[activeTab] && (
-              <Accordion type="single" collapsible className="w-full space-y-2">
-                {suggestions[activeTab]?.exercises.map((ex, index) => (
-                  <AccordionItem value={`item-${activeTab}-${index}`} key={`item-${activeTab}-${index}`} className="border-b-0">
-                    <Card className="bg-card">
-                      <AccordionTrigger className="p-4 hover:no-underline rounded-lg">
-                        <div className="flex flex-col text-left">
-                          <span className="font-bold">{ex.name}</span>
-                          <span className="text-sm text-muted-foreground">{ex.equipment}</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="px-4 pb-4 space-y-2">
-                        <p className="text-sm">{ex.description}</p>
-                        <div className="text-sm font-medium p-2 bg-muted rounded-md">
-                          {ex.sets} sets of {ex.reps} reps
-                          {ex.weight && ex.weight.toLowerCase() !== 'bodyweight' && ` at ~${ex.weight} kg`}
-                        </div>
-                      </AccordionContent>
-                    </Card>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            )}
+  const renderContent = () => {
+    return (
+      <div className="mt-4">
+        {isLoading[activeTab] && (
+          <div className="space-y-2">
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className="h-24 w-full" />
+            ))}
           </div>
-        </Tabs>
-      </CardContent>
-    </Card>
+        )}
+        {!isLoading[activeTab] && suggestions[activeTab] && (
+          <Accordion type="single" collapsible className="w-full space-y-2">
+            {suggestions[activeTab]?.exercises.map((ex, index) => (
+              <AccordionItem value={`item-${activeTab}-${index}`} key={`item-${activeTab}-${index}`} className="border-b-0 rounded-lg border bg-card text-card-foreground shadow-sm">
+                <AccordionTrigger className="p-4 hover:no-underline rounded-lg">
+                  <div className="flex flex-col text-left">
+                    <span className="font-bold">{ex.name}</span>
+                    <span className="text-sm text-muted-foreground">{ex.equipment}</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4 space-y-2">
+                  <p className="text-sm">{ex.description}</p>
+                  <div className="text-sm font-medium p-2 bg-muted rounded-md">
+                    {ex.sets} sets of {ex.reps} reps
+                    {ex.weight && ex.weight.toLowerCase() !== 'bodyweight' && ` at ~${ex.weight} kg`}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        )}
+      </div>
+    );
+  };
+
+  if (isMobile) {
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {EXERCISE_CATEGORIES.map(cat => (
+            <Button
+              key={cat}
+              variant={activeTab === cat ? "default" : "outline"}
+              onClick={() => setActiveTab(cat)}
+              size="sm"
+              className="w-full"
+            >
+              {cat}
+            </Button>
+          ))}
+        </div>
+        {renderContent()}
+      </div>
+    );
+  }
+
+  return (
+    <Tabs 
+      value={activeTab} 
+      onValueChange={(value) => setActiveTab(value as (typeof EXERCISE_CATEGORIES)[number])}
+      className="w-full"
+    >
+      <ScrollArea className="w-full whitespace-nowrap rounded-md border">
+        <TabsList className="inline-flex h-auto w-max p-1">
+          {EXERCISE_CATEGORIES.map(cat => (
+            <TabsTrigger key={cat} value={cat}>{cat}</TabsTrigger>
+          ))}
+        </TabsList>
+      </ScrollArea>
+      
+      <TabsContent value={activeTab}>
+        {renderContent()}
+      </TabsContent>
+    </Tabs>
   )
 }
 
@@ -327,7 +340,20 @@ export function WorkoutsClient() {
         <WorkoutLogger onSave={handleSaveWorkout} />
       </div>
       
-      <AiWorkoutSuggestions />
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles />
+            AI Workout Suggestions
+          </CardTitle>
+          <CardDescription>
+            Get AI-powered exercise ideas for your next workout.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AiWorkoutSuggestions />
+        </CardContent>
+      </Card>
 
       <div className="space-y-4">
         <h3 className="text-2xl font-bold font-headline">Workout History</h3>
@@ -366,3 +392,5 @@ export function WorkoutsClient() {
     </div>
   );
 }
+
+    
