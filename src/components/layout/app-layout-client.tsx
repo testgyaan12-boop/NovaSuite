@@ -44,6 +44,7 @@ import { useSidebar } from "../ui/sidebar";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { cn } from "@/lib/utils";
+import { BodybuilderIcon } from "../icons/bodybuilder-icon";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -93,7 +94,7 @@ function Header() {
             <div className="flex items-center md:hidden">
                 <SidebarTrigger />
                 <div className="flex items-center gap-2 ml-2">
-                    <ApexAthleticsLogo className="size-6 text-primary" />
+                    <BodybuilderIcon className="size-6 text-primary" />
                     <h1 className="text-lg font-semibold font-headline">
                     Apex Athletics
                     </h1>
@@ -275,7 +276,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" className="shrink-0" asChild>
                 <Link href="/">
-                  <ApexAthleticsLogo className="size-6 text-primary" />
+                  <BodybuilderIcon className="size-6 text-primary" />
                 </Link>
               </Button>
               <h1 className="text-xl font-semibold font-headline">
@@ -302,7 +303,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" className="shrink-0" asChild>
                 <Link href="/">
-                  <ApexAthleticsLogo className="size-6 text-primary" />
+                  <BodybuilderIcon className="size-6 text-primary" />
                 </Link>
               </Button>
               <h1 className="text-xl font-semibold font-headline">
