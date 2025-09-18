@@ -1,6 +1,6 @@
 import type { SVGProps } from "react";
 
-export function ApexAthleticsLogo(props: SVGProps<SVGSVGElement>) {
+export function BodybuilderIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -12,7 +12,7 @@ export function ApexAthleticsLogo(props: SVGProps<SVGSVGElement>) {
       strokeLinejoin="round"
       {...props}
     >
-       <path d="M12 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+      <path d="M12 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
       <path d="M18 15a3 3 0 1 0-6 0" />
       <path d="M12 15a3 3 0 1 0-6 0" />
       <path d="m7 21 1-4" />

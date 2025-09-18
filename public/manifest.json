@@ -2,20 +2,20 @@
   "name": "Apex Athletics",
   "short_name": "Apex",
   "description": "The ultimate fitness companion for gym enthusiasts.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1f1f1f",
+  "theme_color": "#e12d2d",
   "icons": [
     {
       "src": "/icon-192x192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
       "src": "/icon-512x512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "type": "image/png"
     }
-  ],
-  "start_url": "/",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#000000"
+  ]
 }
